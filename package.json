@@ -4,8 +4,8 @@
   "description": "Web project for Programming Black",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"hello\"",
-    "start": "node server.js"
+    "test": "jest",
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,7 @@
     "express": "^4.21.2"
   },
   "devDependencies": {
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
   }
 }
