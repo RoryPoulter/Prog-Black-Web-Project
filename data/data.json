@@ -1,0 +1,22 @@
+{
+    "reviews": [
+        {
+            "strName": "Rory Poulter",
+            "strDate": "2024-12-13",
+            "numberStars": 5,
+            "strComment": "Example comment."
+        },
+        {
+            "strName": "Jacob Williams",
+            "strDate": "2024-11-27",
+            "numberStars": 3,
+            "strComment": "Example comment 2."
+        },
+        {
+            "strName": "Charlie Bradley",
+            "strDate": "2024-10-05",
+            "numberStars": 4,
+            "strComment":"Example comment 3."
+        }
+    ]
+}
