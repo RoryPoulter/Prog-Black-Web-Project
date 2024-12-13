@@ -1,0 +1,29 @@
+{
+  "name": "prog-black-web-project",
+  "version": "1.0.0",
+  "description": "Web project for Programming Black",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"hello\"",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RoryPoulter/Prog-Black-Web-Project.git"
+  },
+  "keywords": [
+    "express"
+  ],
+  "author": "Rory Poulter",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/RoryPoulter/Prog-Black-Web-Project/issues"
+  },
+  "homepage": "https://github.com/RoryPoulter/Prog-Black-Web-Project#readme",
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
