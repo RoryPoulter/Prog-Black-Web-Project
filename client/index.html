@@ -15,6 +15,14 @@
             <div class="jumbotron">
                 <h1>Prog Black Web Project</h1>
             </div>
+            <div class="row">
+                <form action="http://127.0.0.1:5000/review" method="POST">
+                    <input type="text" name="name">
+                    <input type="text" name="comment">
+                    <input type="range" min="0" max="5" name="stars">
+                    <input type="submit" value="Post">
+                </form>
+            </div>
         </div>
         <script src="index.js" async defer></script>
         <!-- Bootstrap JS -->
