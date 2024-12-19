@@ -15,4 +15,12 @@ describe('Test the things service', () => {
 	    .get('/stars/3')
 	    .expect('Content-type', /json/);
     });
+
+    test('POST /review fails with empty inputs', () => {
+        const params = {'strName': '', 'strComment': '', 'numberStars': 3};
+        return request(app)
+        .post('/review')
+        .send(params)
+	    .expect(422);
+    });
 });
