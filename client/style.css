@@ -1,0 +1,19 @@
+div.review {
+    border: 1px solid rgb(89, 96, 103);
+    border-radius: 5px;
+    background-color: rgb(241, 248, 255);
+    width: 300px;
+}
+
+div.review h5 {
+    font-size: 12pt;
+}
+
+div.review p.date {
+    color: rgb(166, 170, 173);
+    font-size: 10pt;
+}
+
+.review-comment {
+    width: 300px;
+}
