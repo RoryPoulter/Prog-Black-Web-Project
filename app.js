@@ -4,12 +4,12 @@ const express = require("express");
 const app = express();
 
 // Creates the file `data.json` if it does not exist
-if (!fs.existsSync("./data/data.json")){
-    let str_data = JSON.stringify({reviews:[]});
-    fs.writeFileSync("./data/data.json", str_data);
+if (!fs.existsSync("./client/data/data.json")){
+    let data = JSON.stringify({reviews:[]});
+    fs.writeFileSync("./client/data/data.json", data);
 }
 // Loads content from `data.json`
-const obj_json_content = require("./data/data.json");
+const jsonContent = require("./client/data/data.json");
 
 app.use(express.static('client'));
 app.use(express.json());
@@ -22,46 +22,53 @@ app.get("/", function(req, resp){
 
 // Gets the reviews with a certain amount of stars
 app.get("/stars/:stars", function(req, resp){
-    let number_stars = parseInt(req.params.stars);
-    let obj_data = {reviews: []};
-    for (let obj_review of obj_json_content.reviews){
-        if (obj_review.numberStars == number_stars){
-            obj_data.reviews.push(obj_review);
+    let stars = parseInt(req.params.stars);
+    let data = {reviews: []};
+    for (let review of jsonContent.reviews){
+        if (review.numberStars == stars){
+            data.reviews.push(review);
         };
     };
-    if (obj_data.reviews.length == 0){
-        obj_data.reviews = null;
+    if (data.reviews.length == 0){
+        data.reviews = null;
     }
-    resp.send(obj_data);
+    resp.send(data);
 });
 
 // Checks the form data for repeated names and either appends to data.json or sends an error
 app.post("/review", function(req, resp){
     // Gets form data
-    let str_new_name = req.body.name.toUpperCase();
-    let str_new_comment = req.body.comment;
-    let number_new_stars = req.body.stars;
+    let newName = req.body.strName.toUpperCase();
+    let newComment = req.body.strComment;
+    let newStars = req.body.numberStars;
     // Formats the date into a string
-    let str_current_date = new Date().toJSON().slice(0, 10);
+    let currentDate = new Date().toJSON().slice(0, 10);
+
+    // Input Validation
+    // Check for empty inputs
+    if (!newName || !newComment){
+        resp.send(422);
+        return;
+    }
     // Checks if there is a review with the same name
-    for (let obj_review of obj_json_content.reviews){
-        if (obj_review.strName == str_new_name){
-            resp.send("error");
+    for (let review of jsonContent.reviews){
+        if (review.strName == newName){
+            resp.send(422);
             return;
         }
     }
     // Formats data as object
-    let obj_new_review = {
-        strName: str_new_name,
-        strDate: str_current_date,
-        numberStars: number_new_stars,
-        strComment: str_new_comment
+    let newReview = {
+        strName: newName,
+        strDate: currentDate,
+        numberStars: newStars,
+        strComment: newComment
     };
     // Pushes review to `data.json`
-    obj_json_content.reviews.push(obj_new_review);
-    let str_data = JSON.stringify(obj_json_content);
-    fs.writeFileSync("./data/data.json", str_data);
-    resp.send("success");
-})
+    jsonContent.reviews.push(newReview);
+    let data = JSON.stringify(jsonContent);
+    fs.writeFileSync("./client/data/data.json", data);
+    resp.send(200);
+});
 
 module.exports = app;
