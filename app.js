@@ -35,12 +35,16 @@ app.get("/stars/:stars", function(req, resp){
     resp.send(data);
 });
 
+app.get("/all", function(req, resp){
+    resp.send(jsonContent)
+})
+
 // Checks the form data for repeated names and either appends to data.json or sends an error
 app.post("/review", function(req, resp){
     // Gets form data
     let newName = req.body.strName.toUpperCase();
     let newComment = req.body.strComment;
-    let newStars = req.body.numberStars;
+    let newStars = Number(req.body.numberStars);
     // Formats the date into a string
     let currentDate = new Date().toJSON().slice(0, 10);
 
