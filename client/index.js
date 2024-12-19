@@ -3,16 +3,16 @@
  * @param {object} review The JSON data for the review
  * @returns {HTMLDivElement} The formatted div element
  */
-function createReviewDiv({strName, strDate, numberStars, strComment}){
+function createReviewDiv({name, date, stars, comment}){
     let reviewDiv = document.createElement("div");
     let reviewTitle = document.createElement("h5");
     let reviewDate = document.createElement("p");
     let reviewComment = document.createElement("p");
     reviewDiv.setAttribute("class", "review");
-    reviewTitle.innerHTML = `${strName} - ${formatStars(numberStars)}`;
-    reviewDate.innerHTML = `${strDate}`;
+    reviewTitle.innerHTML = `${name} - ${formatStars(stars)}`;
+    reviewDate.innerHTML = `${date}`;
     reviewDate.setAttribute("class", "date");
-    reviewComment.innerHTML = strComment;
+    reviewComment.innerHTML = comment;
     reviewDiv.appendChild(reviewTitle);
     reviewDiv.appendChild(reviewDate);
     reviewDiv.appendChild(reviewComment);
@@ -21,20 +21,20 @@ function createReviewDiv({strName, strDate, numberStars, strComment}){
 
 /**
  * Generates a string for the review rating
- * @param {number} numberStars The rating of the review
+ * @param {number} stars The rating of the review
  * @returns {string} The formatted string for the rating
  */
-function formatStars(numberStars){
-    if (numberStars == 0){
+function formatStars(stars){
+    if (stars == 0){
         return "☆☆☆☆☆"
-    } else if (numberStars == 5){
+    } else if (stars == 5){
         return "★★★★★"
     } else {
         let strStars = "";
-        for (let i = 0; i < numberStars; i++){
+        for (let i = 0; i < stars; i++){
             strStars = strStars + "★";
         }
-        for (let i = 0; i < 5-numberStars; i++){
+        for (let i = 0; i < 5-stars; i++){
             strStars = strStars + "☆";
         }
         return strStars
@@ -46,18 +46,18 @@ function formatStars(numberStars){
  */
 async function getJsonData(event){
     let response = await fetch("./data/data.json");
-    let objJsonContent = await response.json();
+    let jsonContent = await response.json();
     const reviewsDiv = document.getElementById("all-reviews");
-    if (objJsonContent.reviews.length < 10){
-        for (let objReview of objJsonContent.reviews){
-            let div = createReviewDiv(objReview);
+    if (jsonContent.reviews.length < 10){
+        for (let review of jsonContent.reviews){
+            let div = createReviewDiv(review);
             reviewsDiv.appendChild(div);
             reviewsDiv.appendChild(document.createElement("br"));
         };
     } else {
         for (let i = -1; i > -11; i--){
-            let objReview = objJsonContent.reviews.slice(i)
-            let div = createReviewDiv(objReview);
+            let review = jsonContent.reviews.slice(i)
+            let div = createReviewDiv(review);
             reviewsDiv.appendChild(div);
             reviewsDiv.appendChild(document.createElement("br"));
         }
