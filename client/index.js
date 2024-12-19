@@ -48,11 +48,25 @@ async function getJsonData(event){
     let response = await fetch("./data/data.json");
     let objJsonContent = await response.json();
     const reviewsDiv = document.getElementById("all-reviews");
-    for (let objReview of objJsonContent.reviews){
-        let div = createReviewDiv(objReview);
-        reviewsDiv.appendChild(div);
-        reviewsDiv.appendChild(document.createElement("br"));
-    };
+    if (objJsonContent.reviews.length < 10){
+        for (let objReview of objJsonContent.reviews){
+            let div = createReviewDiv(objReview);
+            reviewsDiv.appendChild(div);
+            reviewsDiv.appendChild(document.createElement("br"));
+        };
+    } else {
+        for (let i = -1; i > -11; i--){
+            let objReview = objJsonContent.reviews.slice(i)
+            let div = createReviewDiv(objReview);
+            reviewsDiv.appendChild(div);
+            reviewsDiv.appendChild(document.createElement("br"));
+        }
+    }
 }
 
 document.addEventListener("DOMContentLoaded", getJsonData(event));
+window.addEventListener("click", async function(event){
+    let response = await this.fetch("https://localhost:5000/review");
+    let body = await response.text();
+    document.getElementById("output").innerHTML = body
+});
