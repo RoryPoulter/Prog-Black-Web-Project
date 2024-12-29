@@ -3,16 +3,16 @@
  * @param {object} review The JSON data for the review
  * @returns {HTMLDivElement} The formatted div element
  */
-function createReviewDiv({name, date, stars, comment}){
+function createReviewDiv(review){
     let reviewDiv = document.createElement("div");
     let reviewTitle = document.createElement("h5");
     let reviewDate = document.createElement("p");
     let reviewComment = document.createElement("p");
     reviewDiv.setAttribute("class", "review");
-    reviewTitle.innerHTML = `${name} - ${formatStars(stars)}`;
-    reviewDate.innerHTML = `${date}`;
+    reviewTitle.innerHTML = `${review.strName} - ${formatStars(review.numberStars)}`;
+    reviewDate.innerHTML = `${review.strDate}`;
     reviewDate.setAttribute("class", "date");
-    reviewComment.innerHTML = comment;
+    reviewComment.innerHTML = review.strComment;
     reviewDiv.appendChild(reviewTitle);
     reviewDiv.appendChild(reviewDate);
     reviewDiv.appendChild(reviewComment);
@@ -48,25 +48,42 @@ async function getJsonData(event){
     let response = await fetch("./data/data.json");
     let jsonContent = await response.json();
     const reviewsDiv = document.getElementById("all-reviews");
-    if (jsonContent.reviews.length < 10){
-        for (let review of jsonContent.reviews){
-            let div = createReviewDiv(review);
-            reviewsDiv.appendChild(div);
-            reviewsDiv.appendChild(document.createElement("br"));
-        };
-    } else {
-        for (let i = -1; i > -11; i--){
-            let review = jsonContent.reviews.slice(i)
-            let div = createReviewDiv(review);
-            reviewsDiv.appendChild(div);
-            reviewsDiv.appendChild(document.createElement("br"));
-        }
+    // The index of the most recent review
+    let startIndex = jsonContent.reviews.length - 1;
+    // The index of the first review (0) or tenth most recent review if there are more than 10 reviews
+    let finalIndex = Math.max(0, startIndex - 9);
+    for (let i = startIndex; i >= finalIndex; i--){
+        let review = jsonContent.reviews[i];
+        let div = createReviewDiv(review);
+        reviewsDiv.appendChild(div);
+        reviewsDiv.appendChild(document.createElement("br"));
     }
 }
 
 document.addEventListener("DOMContentLoaded", getJsonData(event));
-window.addEventListener("click", async function(event){
-    let response = await this.fetch("https://localhost:5000/review");
-    let body = await response.text();
-    document.getElementById("output").innerHTML = body
+const reviewForm = document.getElementById("review-form");
+reviewForm.addEventListener("submit", async function(event){
+    try {
+        event.preventDefault();
+        const formData = new FormData(reviewForm);
+        const formJson = JSON.stringify(Object.fromEntries(formData.entries()));
+        console.log("Form data: ", formData);
+        const response = await fetch("/review",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: formJson
+            }
+        );
+        if (response.ok){
+            const responseBody = await response.text();
+            document.getElementById("output").innerHTML = responseBody
+        } else {
+            alert("Problem with POST request " + response.statusText);
+        }
+    } catch(e) {
+        alert(e);
+    }
 });
