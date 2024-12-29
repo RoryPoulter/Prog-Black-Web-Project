@@ -20,6 +20,7 @@ app.get("/", function(req, resp){
     resp.sendFile("client/index.html");
 });
 
+// *Review GET / POST methods
 // Gets the reviews with a certain amount of stars
 app.get("/stars/:stars", function(req, resp){
     let stars = parseInt(req.params.stars);
@@ -51,7 +52,7 @@ app.post("/review", function(req, resp){
     // Input Validation
     // Check for empty inputs
     if (!newName || !newComment){
-        resp.send(422);
+        resp.send("hello");
         return;
     }
     // Checks if there is a review with the same name
@@ -73,6 +74,34 @@ app.post("/review", function(req, resp){
     let data = JSON.stringify(jsonContent);
     fs.writeFileSync("./client/data/data.json", data);
     resp.send(200);
+});
+
+// *Food GET / POST methods
+// Gets all vegetarian food from the menu
+app.get("/food/vegetarian", function(req, resp){
+    let data = {food: []};
+    for (let food of jsonContent.food){
+        if (food.boolVegetarian){
+            data.food.push(food)
+        }
+    };
+    resp.send(data)
+});
+
+// Gets all vegan food from the menu
+app.get("/food/vegan", function(req, resp){
+    let data = {food: []};
+    for (let food of jsonContent.food){
+        if (food.boolVegan){
+            data.food.push(food)
+        }
+    };
+    resp.send(data)
+});
+
+// Gets all food from the menu
+app.get("/food/all", function(req, resp){
+    resp.send(jsonContent.food)
 });
 
 module.exports = app;
