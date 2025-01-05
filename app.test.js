@@ -23,4 +23,22 @@ describe('Test the things service', () => {
         .send(params)
 	    .expect(422);
     });
+
+    test('GET /food returns JSON', () => {
+        return request(app)
+	    .get('/food')
+	    .expect('Content-type', /json/);
+    });
+
+    test('GET /food?diet=vegan&type=burger includes one entry', () => {
+        return request(app)
+        .get('/food?diet=vegan&type=burger')
+        .expect('{"food":[{"strName":"Vegan Burger","strDescription":"","boolVegetarian":true,"boolVegan":true,"strType":"burger","numberPrice":4.5}]}')
+    })
+
+    test('GET /food?diet=veg returns empty JSON', () => {
+        return request(app)
+        .get('/food?diet=veg')
+        .expect('{"food":null}')
+    })
 });
