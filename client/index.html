@@ -34,12 +34,25 @@
                     <h3>Menu</h3>
                     <p id="output"></p>
                     <form action="http://127.0.0.1:5000/food" id="food-form">
-                        <label for="all">All</label>
-                        <input type="radio" name="diet" value="all" id="all" checked>
-                        <label for="all">Vegetarian</label>
+                        Diet:
+                        <!-- Diet Radio Buttons -->
+                        <label for="diet_all">All</label>
+                        <input type="radio" name="diet" value="all" id="diet_all" checked>
+                        <label for="vegetarian">Vegetarian</label>
                         <input type="radio" name="diet" value="vegetarian" id="vegetarian">
-                        <label for="all">Vegan</label>
+                        <label for="vegan">Vegan</label>
                         <input type="radio" name="diet" value="vegan" id="vegan">
+                        <br>
+                        Type:
+                        <!-- Type Radio Buttons -->
+                        <label for="type_all">All</label>
+                        <input type="radio" name="type" value="all" id="type_all" checked>
+                        <label for="burger">Burgers</label>
+                        <input type="radio" name="type" value="burger" id="burger">
+                        <label for="pizza">Pizzas</label>
+                        <input type="radio" name="type" value="pizza" id="pizza">
+                        <label for="side">Sides</label>
+                        <input type="radio" name="type" value="side" id="side">
                         <input type="submit" value="Search" id="submit-food">
                     </form>
                 </div>
