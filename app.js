@@ -78,49 +78,6 @@ app.post("/review", function(req, resp){
 });
 
 // *Food GET / POST methods
-/**
- * Gets all the vegetarian dishes from the menu
- * @returns {object} The JSON data of all the vegetarian dishes
- */
-function getVegetarianDishes(){
-    let data = {food: []};
-    for (let food of jsonContent.food){
-        if (food.boolVegetarian){
-            data.food.push(food)
-        }
-    };
-    return data
-};
-
-/**
- * Gets all the vegan dishes form the menu
- * @returns {object} The JSON data of all the vegan dishes
- */
-function getVeganDishes(){
-    let data = {food: []};
-    for (let food of jsonContent.food){
-        if (food.boolVegan){
-            data.food.push(food)
-        }
-    };
-    return data
-};
-
-// Gets all vegetarian food from the menu
-app.get("/food/vegetarian", function(req, resp){
-    resp.send(getVegetarianDishes())
-});
-
-// Gets all vegan food from the menu
-app.get("/food/vegan", function(req, resp){
-    resp.send(getVeganDishes())
-});
-
-// Gets all food from the menu
-app.get("/food/all", function(req, resp){
-    resp.send(jsonContent.food)
-});
-
 // Gets food from the menu based on diet and type
 app.get("/food", function(req, resp){
     // Sets variables to all if not included in GET query params
