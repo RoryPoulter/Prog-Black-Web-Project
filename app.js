@@ -121,15 +121,26 @@ app.get("/food/all", function(req, resp){
     resp.send(jsonContent.food)
 });
 
+// Gets food from the menu based on diet and type
 app.get("/food", function(req, resp){
-    let diet = req.query.diet;
-    if (diet == "all"){
+    let diet = req.query.diet || "all";
+    let type = req.query.type || "all";
+    if (diet == "all" && type == "all"){
         resp.send(jsonContent.food);
-    } else if (diet == "vegetarian") {
-        resp.send(getVegetarianDishes());
-    } else {
-        resp.send(getVeganDishes());
-    }
-})
+        return
+    };
+    let data = {food: []};
+    for (let dish of jsonContent.food){
+        let isCorrectDiet = (diet == "vegetarian" && dish.boolVegetarian) || (diet == "vegan" && dish.boolVegan) || diet == "all";
+        let isCorrectType = dish.strType == type || type == "all";
+        if (isCorrectDiet && isCorrectType){
+            data.food.push(dish)
+        }
+    };
+    if (data.food.length == 0){
+        data.food = null
+    };
+    resp.send(data)
+});
 
 module.exports = app;
