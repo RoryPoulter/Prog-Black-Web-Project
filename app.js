@@ -53,7 +53,7 @@ app.post("/review", function(req, resp){
     // Input Validation
     // Check for empty inputs
     if (!newName || !newComment){
-        resp.send("hello");
+        resp.send(422);
         return;
     }
     // Checks if there is a review with the same name
