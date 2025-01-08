@@ -60,6 +60,25 @@ async function getJsonData(event){
     }
 }
 
+
+/**
+ * Creates a formatted div element for the different food
+ * @param {object} food The JSON data from the GET form
+ * @returns {HTMLDivElement} The formatted div
+ */
+function createFoodDiv(food){
+    let foodDiv = document.createElement("div");
+    let foodHeader = document.createElement("h5");
+    foodHeader.innerHTML = food.strName + " | " + food.numberPrice.toFixed(2);
+    let foodDescription = document.createElement("p");
+    foodDescription.innerHTML = food.strDescription;
+    foodDiv.appendChild(foodHeader);
+    foodDiv.appendChild(foodDescription);
+
+    return foodDiv
+};
+
+
 document.addEventListener("DOMContentLoaded", getJsonData(event));
 const reviewForm = document.getElementById("review-form");
 reviewForm.addEventListener("submit", async function(event){
@@ -87,3 +106,23 @@ reviewForm.addEventListener("submit", async function(event){
         alert(e);
     }
 });
+
+const foodForm = document.getElementById("food-form");
+foodForm.addEventListener("submit", async function(event){
+    try {
+        event.preventDefault();
+        const formData = new FormData(foodForm);
+        const formJson = Object.fromEntries(formData.entries());
+        const response = await fetch(`/food?diet=${formJson["diet"]}&type=${formJson["type"]}`);
+        let jsonContent = await response.json();
+        let allFoodDiv = document.getElementById("food-result");
+        allFoodDiv.innerHTML = '';
+        for (let food of jsonContent.food){
+            let foodDiv = createFoodDiv(food);
+            allFoodDiv.appendChild(foodDiv);
+        }
+        
+    } catch(e) {
+        alert(e)
+    }
+})

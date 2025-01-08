@@ -83,13 +83,14 @@ app.get("/food", function(req, resp){
     // Sets variables to all if not included in GET query params
     let diet = req.query.diet || "all";
     let type = req.query.type || "all";
-    // If all meals are selected
-    if (diet == "all" && type == "all"){
-        resp.send(jsonContent.food);
-        return
-    };
     // Stores the JSON data to be returned
     let data = {food: []};
+    // If all meals are selected
+    if (diet == "all" && type == "all"){
+        data.food = jsonContent.food
+        resp.send(data);
+        return
+    };
     // Iterate through the dishes
     for (let dish of jsonContent.food){
         let isCorrectDiet = (diet == "vegetarian" && dish.boolVegetarian) || (diet == "vegan" && dish.boolVegan) || diet == "all";
