@@ -110,15 +110,23 @@ reviewForm.addEventListener("submit", async function(event){
 const foodForm = document.getElementById("food-form");
 foodForm.addEventListener("submit", async function(event){
     try {
+        // Prevents the page from loading to the raw JSON data
         event.preventDefault();
         const formData = new FormData(foodForm);
         const formJson = Object.fromEntries(formData.entries());
-        const response = await fetch(`/food?diet=${formJson["diet"]}&type=${formJson["type"]}`);
+        const response = await fetch(`/food?diet=${formJson.diet}&type=${formJson.type}`);
         let jsonContent = await response.json();
+        // If the request returns an empty JSON, function ends and does not clear DOM
+        if (jsonContent.food == null){
+            return
+        };
         let allFoodDiv = document.getElementById("food-result");
         allFoodDiv.innerHTML = '';
+        // Iterates through the food that matches the criteria
         for (let food of jsonContent.food){
+            // Creates the div
             let foodDiv = createFoodDiv(food);
+            // Appends the div to the DOM
             allFoodDiv.appendChild(foodDiv);
         }
         
