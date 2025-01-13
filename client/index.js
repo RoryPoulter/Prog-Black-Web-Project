@@ -68,8 +68,9 @@ async function getJsonData(event){
  */
 function createFoodDiv(food){
     let foodDiv = document.createElement("div");
+    foodDiv.setAttribute("class", "food");
     let foodHeader = document.createElement("h5");
-    foodHeader.innerHTML = food.strName + " | " + food.numberPrice.toFixed(2);
+    foodHeader.innerHTML = food.strName + " | £" + food.numberPrice.toFixed(2);
     let foodDescription = document.createElement("p");
     foodDescription.innerHTML = food.strDescription;
     foodDiv.appendChild(foodHeader);
@@ -79,7 +80,31 @@ function createFoodDiv(food){
 };
 
 
+async function loadFoodDivs(diet, type){
+    const response = await fetch(`/food?diet=${diet}&type=${type}`);
+    let jsonContent = await response.json();
+    // If the request returns an empty JSON, function ends and does not clear DOM
+    if (jsonContent.food == null){
+        return
+    };
+    let allFoodDiv = document.getElementById("food-result");
+    allFoodDiv.innerHTML = '';
+    // Iterates through the food that matches the criteria
+    for (let food of jsonContent.food){
+        // Creates the div
+        let foodDiv = createFoodDiv(food);
+        // Appends the div to the DOM
+        allFoodDiv.appendChild(foodDiv);
+    }
+}
+
+
+// When the page is first loaded
 document.addEventListener("DOMContentLoaded", getJsonData(event));
+document.addEventListener("DOMContentLoaded", loadFoodDivs("all", "all"));
+
+
+// When the review form is submitted
 const reviewForm = document.getElementById("review-form");
 reviewForm.addEventListener("submit", async function(event){
     try {
@@ -98,7 +123,7 @@ reviewForm.addEventListener("submit", async function(event){
         );
         if (response.ok){
             const responseBody = await response.text();
-            document.getElementById("output").innerHTML = responseBody
+            console.log(responseBody)
         } else {
             alert("Problem with POST request " + response.statusText);
         }
@@ -107,6 +132,7 @@ reviewForm.addEventListener("submit", async function(event){
     }
 });
 
+// When the food form is submitted
 const foodForm = document.getElementById("food-form");
 foodForm.addEventListener("submit", async function(event){
     try {
@@ -114,22 +140,7 @@ foodForm.addEventListener("submit", async function(event){
         event.preventDefault();
         const formData = new FormData(foodForm);
         const formJson = Object.fromEntries(formData.entries());
-        const response = await fetch(`/food?diet=${formJson.diet}&type=${formJson.type}`);
-        let jsonContent = await response.json();
-        // If the request returns an empty JSON, function ends and does not clear DOM
-        if (jsonContent.food == null){
-            return
-        };
-        let allFoodDiv = document.getElementById("food-result");
-        allFoodDiv.innerHTML = '';
-        // Iterates through the food that matches the criteria
-        for (let food of jsonContent.food){
-            // Creates the div
-            let foodDiv = createFoodDiv(food);
-            // Appends the div to the DOM
-            allFoodDiv.appendChild(foodDiv);
-        }
-        
+        loadFoodDivs(formJson.diet, formJson.type);        
     } catch(e) {
         alert(e)
     }
