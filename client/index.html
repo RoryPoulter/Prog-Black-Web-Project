@@ -16,20 +16,7 @@
                 <h1>Prog Black Web Project</h1>
             </div>
             <div class="row">
-                <div class="col-md-3">
-                    <h3>Reviews</h3>
-                    <form action="http://127.0.0.1:5000/review" method="POST" id="review-form">
-                        <label for="strName">Name:</label><br>
-                        <input type="text" name="strName"><br>
-                        <label for="numberStars">Rating:</label><br>
-                        <input type="range" min="0" max="5" name="numberStars"><br>
-                        <label for="strComment">Comment:</label><br>
-                        <textarea name="strComment" class="review-comment"></textarea>
-                        <input type="submit" value="Post" id="submit-review">
-                    </form><br>
-                    <div id="all-reviews">
-                    </div>
-                </div>
+                <!-- Food column -->
                 <div class="col-md-9">
                     <h3>Menu</h3>
                     <p id="output"></p>
@@ -51,17 +38,33 @@
                         <input type="radio" name="type" value="burger" id="burger">
                         <label for="pizza">Pizzas</label>
                         <input type="radio" name="type" value="pizza" id="pizza">
-                        <label for="side">Sides</label>
-                        <input type="radio" name="type" value="side" id="side">
                         <label for="chicken">Chicken</label>
                         <input type="radio" name="type" value="chicken" id="chicken">
+                        <label for="side">Sides</label>
+                        <input type="radio" name="type" value="side" id="side">
                         <input type="submit" value="Search" id="submit-food">
                     </form>
+                    <br>
                     <div id="food-result">
                     </div>
                 </div>
+                <!-- Review column -->
+                <div class="col-md-3">
+                    <h3>Reviews</h3>
+                    <form action="http://127.0.0.1:5000/review" method="POST" id="review-form">
+                        <label for="strName">Name:</label><br>
+                        <input type="text" name="strName"><br>
+                        <label for="numberStars">Rating:</label><br>
+                        <input type="range" min="0" max="5" name="numberStars"><br>
+                        <label for="strComment">Comment:</label><br>
+                        <textarea name="strComment" class="review-comment"></textarea>
+                        <input type="submit" value="Post" id="submit-review">
+                    </form><br>
+                    <div id="all-reviews">
+                    </div>
+                </div>
                 <div class="container">
-                    <!-- Code from: https://getbootstrap.com/docs/5.3/examples/footers/# -->
+                    <!-- Code for footer from: https://getbootstrap.com/docs/5.3/examples/footers/# -->
                     <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
                         <div class="col-md-4 d-flex align-items-center">
                             <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1">
