@@ -1,118 +1,163 @@
-/**
- * Creates the div element for the reviews
- * @param {object} review The JSON data for the review
- * @returns {HTMLDivElement} The formatted div element
- */
-function createReviewDiv(review){
-    let reviewDiv = document.createElement("div");
-    let reviewTitle = document.createElement("h5");
-    let reviewDate = document.createElement("p");
-    let reviewComment = document.createElement("p");
-    reviewDiv.setAttribute("class", "review");
-    reviewTitle.innerHTML = `${review.strName} - ${formatStars(review.numberStars)}`;
-    reviewDate.innerHTML = `${review.strDate}`;
-    reviewDate.setAttribute("class", "date");
-    reviewComment.innerHTML = review.strComment;
-    reviewDiv.appendChild(reviewTitle);
-    reviewDiv.appendChild(reviewDate);
-    reviewDiv.appendChild(reviewComment);
-    return reviewDiv;
-}
+// ? Code snippet from https://stackoverflow.com/questions/196972/convert-string-to-title-case-with-javascript
+String.prototype.toProperCase = function () {
+    return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+};
+// ? End of snippet
 
-/**
- * Generates a string for the review rating
- * @param {number} stars The rating of the review
- * @returns {string} The formatted string for the rating
- */
-function formatStars(stars){
-    if (stars == 0){
-        return "☆☆☆☆☆"
-    } else if (stars == 5){
-        return "★★★★★"
+let ingredientCount = 2;
+const addIngredientButton = document.getElementById("addIngr");
+const subIngredientButton = document.getElementById("subIngr");
+const ingredientsDiv = document.getElementById("all-ingredients");
+
+addIngredientButton.addEventListener("click", function(event){
+    event.preventDefault();
+    ingredientCount++;
+
+    if (ingredientCount == 3){
+        subIngredientButton.disabled = false
+    } else if (ingredientCount == 15){
+        addIngredientButton.disabled = true
+    }
+
+    // Add the input elements
+    let newIngredient = document.createElement("input");
+    newIngredient.type = "text";
+    newIngredient.id = "drinkIngr" + ingredientCount;
+    newIngredient.name = "drinkIngr" + ingredientCount;
+    let newAmount = document.createElement("input");
+    newAmount.type = "text";
+    newAmount.id = "drinkIngrAm" + ingredientCount;
+    newAmount.name = "drinkIngrAm" + ingredientCount;
+    newAmount.setAttribute("class", "ingredient-amount");
+
+    ingredientsDiv.appendChild(newIngredient);
+    ingredientsDiv.appendChild(newAmount);
+    ingredientsDiv.appendChild(document.createElement("br"))
+})
+subIngredientButton.addEventListener("click", function(event){
+    event.preventDefault();
+    ingredientCount--;
+
+    if (ingredientCount == 2){
+        subIngredientButton.disabled = true
+    } else if (ingredientCount == 14){
+        addIngredientButton.disabled = false
+    }
+
+    for (let _ = 0; _ < 3; _++){
+        ingredientsDiv.removeChild(ingredientsDiv.lastChild)
+    }
+})
+
+const dropZoneDiv = document.getElementById("dropZone");
+dropZoneDiv.addEventListener("drop", function(event){
+    console.log("File(s) dropped");
+
+    // Prevent default behavior (Prevent file from being opened)
+    event.preventDefault();
+
+    if (event.dataTransfer.items) {
+        // Use DataTransferItemList interface to access the file(s)
+        [...event.dataTransfer.items].forEach((item, i) => {
+        // If dropped items aren't files, reject them
+        if (item.kind === "file") {
+            const file = item.getAsFile();
+            console.log(`… file[${i}].name = ${file.name}`);
+        }
+        });
     } else {
-        let strStars = "";
-        for (let i = 0; i < stars; i++){
-            strStars = strStars + "★";
-        }
-        for (let i = 0; i < 5-stars; i++){
-            strStars = strStars + "☆";
-        }
-        return strStars
+        // Use DataTransfer interface to access the file(s)
+        [...event.dataTransfer.files].forEach((file, i) => {
+        console.log(`… file[${i}].name = ${file.name}`);
+        });
     }
-}
+})
+dropZoneDiv.addEventListener("dragover", function(event){
+    console.log("File(s) in drop zone");
 
-/**
- * Fetches the JSON content and populates the webpage with div elements for the reviews
- */
-async function getJsonData(event){
-    let response = await fetch("./data/data.json");
+    // Prevent default behavior (Prevent file from being opened)
+    event.preventDefault();
+})
+
+window.addEventListener("DOMContentLoaded", async function(event){
+    console.log(event);
+    let response = await this.fetch("./data/data.json");
     let jsonContent = await response.json();
-    const reviewsDiv = document.getElementById("all-reviews");
-    // The index of the most recent review
-    let startIndex = jsonContent.reviews.length - 1;
-    // The index of the first review (0) or tenth most recent review if there are more than 10 reviews
-    let finalIndex = Math.max(0, startIndex - 9);
-    for (let i = startIndex; i >= finalIndex; i--){
-        let review = jsonContent.reviews[i];
-        let div = createReviewDiv(review);
-        reviewsDiv.appendChild(div);
-        reviewsDiv.appendChild(document.createElement("br"));
+    let searchSelect = document.getElementById("ingredients");
+    for (let ingredient of jsonContent.ingredients){
+        // ? Ex: <option value="vodka">Vodka</option>
+        let ingredientOption = document.createElement("option");
+        ingredientOption.value = ingredient;
+        ingredientOption.innerHTML = ingredient.toProperCase();
+        searchSelect.appendChild(ingredientOption);
     }
-}
+})
 
 
 /**
- * Creates a formatted div element for the different food
- * @param {object} food The JSON data from the GET form
- * @returns {HTMLDivElement} The formatted div
+ * Creates a div element with information about a given drink
+ * @param {object} drinkData The drink data from `data.json`
+ * @returns {HTMLDivElement} The formatted div for the drink
  */
-function createFoodDiv(food){
-    let foodDiv = document.createElement("div");
-    foodDiv.setAttribute("class", "food");
-    let foodHeader = document.createElement("h5");
-    foodHeader.innerHTML = food.strName + " | £" + food.numberPrice.toFixed(2);
-    let foodDescription = document.createElement("p");
-    foodDescription.innerHTML = food.strDescription;
-    foodDiv.appendChild(foodHeader);
-    foodDiv.appendChild(foodDescription);
+function createDrinkDiv(drinkData){
+    let parentDiv = document.createElement("div");
+    parentDiv.setAttribute("class", "col-md-6")
+    let drinkDiv = document.createElement("div");
+    drinkDiv.setAttribute("class", "drink-div")
+    let drinkTitle = document.createElement("h4");
+    drinkTitle.innerHTML = drinkData.strName;
+    let drinkInstructions = document.createElement("p");
+    drinkInstructions.innerHTML = "<b>Instructions:</b> " + drinkData.strInstructions;
+    let p = document.createElement("p");
+    p.innerHTML = "<b>Ingredients:</b>";
+    // Make the ingredients table
+    let ingredientsTable = document.createElement("table");
+    let i = 1;
+    while (i < 16 && drinkData["strIngredient"+i] != null){
+        let tableRow = document.createElement("tr");
+        let rowAmount = document.createElement("td");
+        rowAmount.setAttribute("class", "amount-header");
+        rowAmount.innerHTML = drinkData["strIngredientAmount"+i];
+        let rowIngredient = document.createElement("td");
+        rowIngredient.innerHTML = drinkData["strIngredient"+i].toProperCase();
+        tableRow.appendChild(rowAmount);
+        tableRow.appendChild(rowIngredient);
+        ingredientsTable.appendChild(tableRow);
+        i++
+    };
 
-    return foodDiv
+    drinkDiv.append(drinkTitle, p, ingredientsTable, drinkInstructions);
+    parentDiv.appendChild(drinkDiv);
+    return parentDiv
 };
 
 
-async function loadFoodDivs(diet, type){
-    const response = await fetch(`/food?diet=${diet}&type=${type}`);
+const searchForm = document.getElementById("search");
+const searchResult = document.getElementById("searchResult");
+searchForm.addEventListener("submit", async function(event){
+    event.preventDefault();
+    const formData = new FormData(searchForm);
+    const formJson = Object.fromEntries(formData.entries());
+    const response = await fetch(`/search?ingredients=${formJson.ingredients}`);
     let jsonContent = await response.json();
-    // If the request returns an empty JSON, function ends and does not clear DOM
-    if (jsonContent.food == null){
+    if (jsonContent.drinks == null){
         return
     };
-    let allFoodDiv = document.getElementById("food-result");
-    allFoodDiv.innerHTML = '';
-    // Iterates through the food that matches the criteria
-    for (let food of jsonContent.food){
-        // Creates the div
-        let foodDiv = createFoodDiv(food);
-        // Appends the div to the DOM
-        allFoodDiv.appendChild(foodDiv);
+    searchResult.innerHTML = "";
+    for (let drink of jsonContent.drinks){
+        let drinkDiv = createDrinkDiv(drink);
+        searchResult.appendChild(drinkDiv);
     }
-}
+})
 
-
-// When the page is first loaded
-document.addEventListener("DOMContentLoaded", getJsonData(event));
-document.addEventListener("DOMContentLoaded", loadFoodDivs("all", "all"));
-
-
-// When the review form is submitted
-const reviewForm = document.getElementById("review-form");
-reviewForm.addEventListener("submit", async function(event){
+const submitForm = document.getElementById("submit");
+submitForm.addEventListener("submit", async function(event){
     try {
         event.preventDefault();
-        const formData = new FormData(reviewForm);
+        const formData = new FormData(submitForm);
         const formJson = JSON.stringify(Object.fromEntries(formData.entries()));
         console.log("Form data: ", formData);
-        const response = await fetch("/review",
+        const response = await fetch("/submit",
             {
                 method: "POST",
                 headers: {
@@ -129,19 +174,5 @@ reviewForm.addEventListener("submit", async function(event){
         }
     } catch(e) {
         alert(e);
-    }
-});
-
-// When the food form is submitted
-const foodForm = document.getElementById("food-form");
-foodForm.addEventListener("submit", async function(event){
-    try {
-        // Prevents the page from loading to the raw JSON data
-        event.preventDefault();
-        const formData = new FormData(foodForm);
-        const formJson = Object.fromEntries(formData.entries());
-        loadFoodDivs(formJson.diet, formJson.type);        
-    } catch(e) {
-        alert(e)
     }
 })

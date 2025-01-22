@@ -1,29 +1,48 @@
-/* ?Review div styles */
-div.review {
-    border: 1px solid #034078;
+button.square-button {
+    width: 30px;
+    height: 30px;
+    border-radius: 3px;
+    background-color: dodgerblue;
+    color: white;
+    border: solid 1px black;
+    font-size: 18pt;
+    line-height: 10px;
+}
+
+button.square-button:disabled {
+    background-color: rgb(199, 197, 197);
+}
+
+input.ingredient-amount {
+    width: 80px;
+}
+
+#drop_zone {
+    border: 5px solid blue;
+    width: 200px;
+    height: 100px;
+}
+
+div.drink-div {
     border-radius: 5px;
-    background-color: #1282A2;
-    width: 300px;
-    color: #FEFCFB;
-    padding-left: 5px;
+    border: solid 1px lightslategray;
+    padding: 5px;
+    margin-bottom: 10px;
 }
 
-div.review h5 {
-    font-size: 12pt;
+div.drink-div h4 {
+    text-align: center;
 }
 
-div.review p.date {
-    font-size: 10pt;
+div.drink-div table {
+    margin-left: 30px;
 }
 
-.review-comment {
-    width: 300px;
+div.drink-div p {
+    margin-bottom: 0px;
+    padding-bottom: 0px;
 }
 
-/* ?Food div styles */
-div.food {
-    background-color: #034078;
-    color: #FEFCFB;
-    border-radius: 5px;
-    padding-left: 5px;
+td.amount-header {
+    width: 60px;
 }

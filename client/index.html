@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title></title>
+        <title>Cocktail Guide</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="style.css">
@@ -13,69 +13,53 @@
     <body>
         <div class="container">
             <div class="jumbotron">
-                <h1>Prog Black Web Project</h1>
+                <h1>Cocktail Guide</h1>
             </div>
-            <div class="row">
-                <!-- Food column -->
-                <div class="col-md-9">
-                    <h3>Menu</h3>
-                    <p id="output"></p>
-                    <form action="http://127.0.0.1:5000/food" id="food-form">
-                        Diet:
-                        <!-- Diet Radio Buttons -->
-                        <label for="diet_all">All</label>
-                        <input type="radio" name="diet" value="all" id="diet_all" checked>
-                        <label for="vegetarian">Vegetarian</label>
-                        <input type="radio" name="diet" value="vegetarian" id="vegetarian">
-                        <label for="vegan">Vegan</label>
-                        <input type="radio" name="diet" value="vegan" id="vegan">
-                        <br>
-                        Type:
-                        <!-- Type Radio Buttons -->
-                        <label for="type_all">All</label>
-                        <input type="radio" name="type" value="all" id="type_all" checked>
-                        <label for="burger">Burgers</label>
-                        <input type="radio" name="type" value="burger" id="burger">
-                        <label for="pizza">Pizzas</label>
-                        <input type="radio" name="type" value="pizza" id="pizza">
-                        <label for="chicken">Chicken</label>
-                        <input type="radio" name="type" value="chicken" id="chicken">
-                        <label for="side">Sides</label>
-                        <input type="radio" name="type" value="side" id="side">
-                        <input type="submit" value="Search" id="submit-food">
-                    </form>
-                    <br>
-                    <div id="food-result">
-                    </div>
-                </div>
-                <!-- Review column -->
-                <div class="col-md-3">
-                    <h3>Reviews</h3>
-                    <form action="http://127.0.0.1:5000/review" method="POST" id="review-form">
-                        <label for="strName">Name:</label><br>
-                        <input type="text" name="strName"><br>
-                        <label for="numberStars">Rating:</label><br>
-                        <input type="range" min="0" max="5" name="numberStars"><br>
-                        <label for="strComment">Comment:</label><br>
-                        <textarea name="strComment" class="review-comment"></textarea>
-                        <input type="submit" value="Post" id="submit-review">
-                    </form><br>
-                    <div id="all-reviews">
-                    </div>
-                </div>
-                <div class="container">
-                    <!-- Code for footer from: https://getbootstrap.com/docs/5.3/examples/footers/# -->
-                    <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
-                        <div class="col-md-4 d-flex align-items-center">
-                            <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1">
-                                <svg class="bi" width="30" height="24"><use xlink:href="#bootstrap"></use></svg>
-                            </a>
-                            <span class="mb-3 mb-md-0 text-body-secondary">© 2024 Company, Inc | 01225 555555</span>
+            <h3>Submit Cocktail</h3>
+            <h6>Share your own recipes</h6>
+            <form action="http://127.0.0.1:5000/submit" method="POST" id="submit">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label for="drinkImg">Image:</label>
+                        <input type="file" id="drinkImg" name="drinkImg"><br>
+
+                        <div id="drop_zone">
+                            <p>Drag one or more files to this <i>drop zone</i>.</p>
                         </div>
-                    </footer>
+
+                        <label for="drinkInst">Instructions:</label><br>
+                        <textarea name="drinkInst" cols="60" rows="4"></textarea><br>
+                        <input type="submit" value="Share">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="drinkName">Name:</label><br>
+                        <input type="text" id="drinkName" name="drinkName"><br><br>
+                        Ingredients:
+                        <button class="square-button" id="addIngr"><b>+</b></button>  
+                        <button class="square-button" id="subIngr" disabled><b>-</b></button><br>
+                        <div id="all-ingredients">
+                            <input type="text" id="drinkIngr1" name="drinkIngr1" placeholder="Ingredient e.g. vodka" required>
+                            <input type="text" id="drinkIngrAm1" name="drinkIngrAm1" class="ingredient-amount" placeholder="Amount" required><br>
+                            <input type="text" id="drinkIngr2" name="drinkIngr2" required>
+                            <input type="text" id="drinkIngrAm2" name="drinkIngrAm2" class="ingredient-amount" required><br>
+                        </div>
+                    </div>
+                    <br>
                 </div>
-            </div>
+            </form>
+            <hr>
+            <h3>Cocktail Search</h3>
+            <h6>Find the next cocktail you'll love</h6>
+            <form action="http://127.0.0.1:5000/search" id="search">
+                <label for="ingredients">Ingredient:</label>
+                <select name="ingredients" id="ingredients">
+                    <option value="-------">-------</option>
+                </select>
+                <input type="submit" value="Search">
+            </form>
+            <div id="searchResult" class="row"></div>
         </div>
+
         <script src="index.js" async defer></script>
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
