@@ -10,35 +10,23 @@ describe('Test the things service', () => {
 	    .expect(200);
     });
 
-    test('GET /stars/3 returns JSON', () => {
+    test('GET /search?ingredient=vodka returns JSON', () => {
         return request(app)
-	    .get('/stars/3')
+	    .get('/search?ingredient=vodka')
 	    .expect('Content-type', /json/);
     });
 
-    test('POST /review fails with empty inputs', () => {
-        const params = {'strName': '', 'strComment': '', 'numberStars': 3};
+    test('GET /search?ingredient=invalid returns empty JSON', () => {
         return request(app)
-        .post('/review')
+	    .get('/search?ingredient=invalid')
+	    .expect('{"drinks":null}');
+    });
+
+    test('POST /submit fails with empty inputs', () => {
+        const params = {'drinkName': '', 'drinkInst': '', 'drinkIngr1': '', 'drinkIngrAm1': '', 'drinkIngr2': '', 'drinkIngrAm2': ''};
+        return request(app)
+        .post('/submit')
         .send(params)
 	    .expect(422);
-    });
-
-    test('GET /food returns JSON', () => {
-        return request(app)
-	    .get('/food')
-	    .expect('Content-type', /json/);
-    });
-
-    test('GET /food?diet=vegan&type=burger includes one entry', () => {
-        return request(app)
-        .get('/food?diet=vegan&type=burger')
-        .expect('{"food":[{"strName":"Vegan Burger","strDescription":"","boolVegetarian":true,"boolVegan":true,"strType":"burger","numberPrice":4.5}]}');
-    });
-
-    test('GET /food?diet=veg returns empty JSON', () => {
-        return request(app)
-        .get('/food?diet=veg')
-        .expect('{"food":null}');
     });
 });
