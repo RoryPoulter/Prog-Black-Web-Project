@@ -2,7 +2,7 @@ button.square-button {
     width: 30px;
     height: 30px;
     border-radius: 3px;
-    background-color: dodgerblue;
+    background-color: rgb(251, 177, 19);
     color: white;
     border: solid 1px black;
     font-size: 18pt;
@@ -10,7 +10,7 @@ button.square-button {
 }
 
 button.square-button:disabled {
-    background-color: rgb(199, 197, 197);
+    background-color: rgb(197, 114, 41);
 }
 
 input.ingredient-amount {
@@ -18,7 +18,7 @@ input.ingredient-amount {
 }
 
 #drop_zone {
-    border: 5px solid blue;
+    border: 5px solid rgb(251, 177, 19);
     width: 200px;
     height: 100px;
 }
@@ -28,10 +28,14 @@ div.drink-div {
     border: solid 1px lightslategray;
     padding: 5px;
     margin-bottom: 10px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    background-color: rgb(251, 177, 19);
+    color: white;
 }
 
 div.drink-div h4 {
     text-align: center;
+    color: rgb(197, 114, 41);
 }
 
 div.drink-div table {
@@ -45,4 +49,19 @@ div.drink-div p {
 
 td.amount-header {
     width: 60px;
+}
+
+div.jumbotron {
+    background-color: rgb(251, 177, 19);
+    color: rgb(197, 114, 41);
+    padding-left: 50px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+select {
+    background-color: rgb(251, 177, 19);
+    color: white;
+    border-radius: 5px;
 }
