@@ -10,7 +10,7 @@ if (!fs.existsSync("./client/data/data.json")){
 }
 // Loads content from `data.json`
 const jsonContent = require("./client/data/data.json");
-const { parseArgs } = require('util');
+// const { parseArgs } = require('util');
 
 
 app.use(express.static('client'));
@@ -77,6 +77,7 @@ app.post("/submit", function(req, resp){
         strName: newName,
         strInstructions: newInstructions,
         strImageName: newName + ".png",
+        numberIngredients: 0,
         strIngredient1: newIngredient1,
         strIngredientAmount1: newAmount1,
         strIngredient2: newIngredient2,
@@ -108,17 +109,18 @@ app.post("/submit", function(req, resp){
         strIngredient15: newIngredient15,
         strIngredientAmount15: newAmount15,
     };
-    // Pushes drink to `data.json`
-    jsonContent.drinks.push(newDrink);
+    
 
     let i = 1;
     while (i < 16 && newDrink["strIngredient"+i] != null){
-        if (!jsonContent.ingredients.includes(newDrink["strIngredient"]+i)){
-            jsonContent.ingredients.push(newDrink["strIngredient"]+i);
+        if (!jsonContent.ingredients.includes(newDrink["strIngredient"+i])){
+            jsonContent.ingredients.push(newDrink["strIngredient"+i]);
         }
         i++;
     }
-
+    newDrink.numberIngredients = i-1;
+    // Pushes drink to `data.json`
+    jsonContent.drinks.push(newDrink);
     let data = JSON.stringify(jsonContent);
     fs.writeFileSync("./client/data/data.json", data);
     resp.send(200);

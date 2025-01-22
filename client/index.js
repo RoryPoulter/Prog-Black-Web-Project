@@ -7,7 +7,7 @@ String.prototype.toProperCase = function () {
 let ingredientCount = 2;
 const addIngredientButton = document.getElementById("addIngr");
 const subIngredientButton = document.getElementById("subIngr");
-const ingredientsDiv = document.getElementById("all-ingredients");
+const allIngredientsDiv = document.getElementById("all-ingredients");
 
 addIngredientButton.addEventListener("click", function(event){
     event.preventDefault();
@@ -20,6 +20,7 @@ addIngredientButton.addEventListener("click", function(event){
     }
 
     // Add the input elements
+    let newDiv = document.createElement("div");
     let newIngredient = document.createElement("input");
     newIngredient.type = "text";
     newIngredient.id = "drinkIngr" + ingredientCount;
@@ -30,9 +31,9 @@ addIngredientButton.addEventListener("click", function(event){
     newAmount.name = "drinkIngrAm" + ingredientCount;
     newAmount.setAttribute("class", "ingredient-amount");
 
-    ingredientsDiv.appendChild(newIngredient);
-    ingredientsDiv.appendChild(newAmount);
-    ingredientsDiv.appendChild(document.createElement("br"))
+    newDiv.appendChild(newIngredient);
+    newDiv.appendChild(newAmount);
+    allIngredientsDiv.appendChild(newDiv);
 })
 subIngredientButton.addEventListener("click", function(event){
     event.preventDefault();
@@ -44,9 +45,7 @@ subIngredientButton.addEventListener("click", function(event){
         addIngredientButton.disabled = false
     }
 
-    for (let _ = 0; _ < 3; _++){
-        ingredientsDiv.removeChild(ingredientsDiv.lastChild)
-    }
+    allIngredientsDiv.removeChild(allIngredientsDiv.lastChild)
 })
 
 const dropZoneDiv = document.getElementById("dropZone");
@@ -112,8 +111,8 @@ function createDrinkDiv(drinkData){
     p.innerHTML = "<b>Ingredients:</b>";
     // Make the ingredients table
     let ingredientsTable = document.createElement("table");
-    let i = 1;
-    while (i < 16 && drinkData["strIngredient"+i] != null){
+
+    for (let i = 1; i <= drinkData.numberIngredients; i++){
         let tableRow = document.createElement("tr");
         let rowAmount = document.createElement("td");
         rowAmount.setAttribute("class", "amount-header");
@@ -123,7 +122,6 @@ function createDrinkDiv(drinkData){
         tableRow.appendChild(rowAmount);
         tableRow.appendChild(rowIngredient);
         ingredientsTable.appendChild(tableRow);
-        i++
     };
 
     drinkDiv.append(drinkTitle, p, ingredientsTable, drinkInstructions);
