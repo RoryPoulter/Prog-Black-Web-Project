@@ -48,39 +48,43 @@ subIngredientButton.addEventListener("click", function(event){
     allIngredientsDiv.removeChild(allIngredientsDiv.lastChild)
 })
 
-const dropZoneDiv = document.getElementById("dropZone");
-dropZoneDiv.addEventListener("drop", function(event){
-    console.log("File(s) dropped");
+// const dropZoneDiv = document.getElementById("dropZone");
+// dropZoneDiv.addEventListener("drop", function(event){
+//     console.log("File(s) dropped");
 
-    // Prevent default behavior (Prevent file from being opened)
-    event.preventDefault();
+//     // Prevent default behavior (Prevent file from being opened)
+//     event.preventDefault();
 
-    if (event.dataTransfer.items) {
-        // Use DataTransferItemList interface to access the file(s)
-        [...event.dataTransfer.items].forEach((item, i) => {
-        // If dropped items aren't files, reject them
-        if (item.kind === "file") {
-            const file = item.getAsFile();
-            console.log(`… file[${i}].name = ${file.name}`);
-        }
-        });
-    } else {
-        // Use DataTransfer interface to access the file(s)
-        [...event.dataTransfer.files].forEach((file, i) => {
-        console.log(`… file[${i}].name = ${file.name}`);
-        });
-    }
-})
-dropZoneDiv.addEventListener("dragover", function(event){
-    console.log("File(s) in drop zone");
+//     if (event.dataTransfer.items) {
+//         // Use DataTransferItemList interface to access the file(s)
+//         [...event.dataTransfer.items].forEach((item, i) => {
+//         // If dropped items aren't files, reject them
+//         if (item.kind === "file") {
+//             const file = item.getAsFile();
+//             console.log(`… file[${i}].name = ${file.name}`);
+//         }
+//         });
+//     } else {
+//         // Use DataTransfer interface to access the file(s)
+//         [...event.dataTransfer.files].forEach((file, i) => {
+//         console.log(`… file[${i}].name = ${file.name}`);
+//         });
+//     }
+// })
+// dropZoneDiv.addEventListener("dragover", function(event){
+//     console.log("File(s) in drop zone");
 
-    // Prevent default behavior (Prevent file from being opened)
-    event.preventDefault();
-})
+//     // Prevent default behavior (Prevent file from being opened)
+//     event.preventDefault();
+// })
 
-window.addEventListener("DOMContentLoaded", async function(event){
+
+/**
+ * Gets the JSON data and adds the ingredients to the select element
+ */
+async function getJsonData(event) {
     console.log(event);
-    let response = await this.fetch("./data/data.json");
+    let response = await fetch("./data/data.json");
     let jsonContent = await response.json();
     let searchSelect = document.getElementById("ingredients");
     for (let ingredient of jsonContent.ingredients){
@@ -90,8 +94,8 @@ window.addEventListener("DOMContentLoaded", async function(event){
         ingredientOption.innerHTML = ingredient.toProperCase();
         searchSelect.appendChild(ingredientOption);
     }
-})
-
+}
+document.addEventListener("DOMContentLoaded", getJsonData(event));
 
 /**
  * Creates a div element with information about a given drink
@@ -136,7 +140,7 @@ searchForm.addEventListener("submit", async function(event){
     event.preventDefault();
     const formData = new FormData(searchForm);
     const formJson = Object.fromEntries(formData.entries());
-    const response = await fetch(`/search?ingredients=${formJson.ingredients}`);
+    const response = await fetch(`/search?ingredients=${formJson.ingredients}&maxIngredients=${formJson.maxIngredients}`);
     let jsonContent = await response.json();
     if (jsonContent.drinks == null){
         return

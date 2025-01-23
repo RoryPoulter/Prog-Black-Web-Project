@@ -62,10 +62,12 @@
                 <select name="ingredients" id="ingredients">
                     <option value="-------">-------</option>
                 </select>
+                <label for="maxIngredients">Max ingredients:</label>
+                <input type="range" min="2" max="15" name="maxIngredients" id="maxIngredients">
                 <input type="submit" value="Search">
             </form><br>
             <div class="container">
-                <div id="searchResult" class="row"></div>
+                <div id="searchResult" class="row search-results"></div>
             </div>
         </div>
         <script src="index.js" async defer></script>
