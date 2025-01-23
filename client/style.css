@@ -24,13 +24,20 @@ input.ingredient-amount {
 }
 
 div.drink-div {
-    border-radius: 5px;
-    border: solid 2px rgb(172, 96, 25);
+    /* border-radius: 5px;
+    border: solid 2px rgb(172, 96, 25); */
     padding: 5px;
     margin-bottom: 10px;
     font-family: Georgia, 'Times New Roman', Times, serif;
-    background-color: rgb(251, 177, 19);
+    /* background-color: rgb(251, 177, 19); */
     color: white;
+}
+
+div.search-results {
+    background-color: rgb(251, 177, 19);
+    border-radius: 5px;
+    border: solid 2px rgb(172, 96, 25);
+    margin-bottom: 30px;
 }
 
 div.drink-div h4 {
@@ -102,4 +109,8 @@ input[type="text"], textarea {
 
 h3, h6 {
     font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+button:hover, input[type="submit"]:hover, select:hover {
+    background-color: rgb(252, 188, 49);
 }
