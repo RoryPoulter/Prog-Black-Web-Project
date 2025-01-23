@@ -126,10 +126,11 @@ app.post("/submit", function(req, resp){
     resp.send(200);
 });
 
-// *Search GET / POST methods
+// *Search GET methods
 // Gets food from the menu based on diet and type
 app.get("/search", function(req, resp){
     let searchIngredient = req.query.ingredients;
+    let searchAmount = req.query.maxIngredients || 15;
     // If no ingredient is selected
     if (searchIngredient == "-------"){
         return
@@ -138,14 +139,14 @@ app.get("/search", function(req, resp){
     let data = {drinks: []};
     // Iterate through the drinks
     for (let drink of jsonContent.drinks){
-        let allIngredients = new Array();
-        let i = 1;
-        while (i < 16 && drink["strIngredient"+i] != null){
-            allIngredients.push(drink["strIngredient"+i]);
-            i++;
-        };
-        if (allIngredients.includes(searchIngredient)){
-            data.drinks.push(drink)
+        if (drink.numberIngredients <= searchAmount){
+            let allIngredients = new Array();
+            for (let i = 1; i <= drink.numberIngredients; i++){
+                allIngredients.push(drink["strIngredient"+i]);
+            };
+            if (allIngredients.includes(searchIngredient)){
+                data.drinks.push(drink)
+            }
         }
     };
     // If no drinks matched criteria
