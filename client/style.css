@@ -1,6 +1,5 @@
 /* Define custom colour variables */
 :root {
-    --background: #fbb113;
     --page-background: #ffffff;
     --search-background: #fae2b0;
     --text: #ac6019;
@@ -12,7 +11,7 @@ button.square-button {
     width: 30px;
     height: 30px;
     border-radius: 3px;
-    background-color: var(--background);
+    background-color: var(--highlight);
     color: white;
     border: solid 1px var(--border);
     font-size: 18pt;
