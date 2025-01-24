@@ -139,13 +139,12 @@ app.get("/search", function(req, resp){
             if (searchIngredient == "all"){
                 data.drinks.push(drink);
             } else {
-                let allIngredients = new Array();
                 for (let i = 1; i <= drink.numberIngredients; i++){
-                    allIngredients.push(drink["strIngredient"+i]);
+                    if (drink["strIngredient"+i] == searchIngredient){
+                        data.drinks.push(drink);
+                        break
+                    }
                 };
-                if (allIngredients.includes(searchIngredient)){
-                    data.drinks.push(drink)
-                }
             }
         }
     };
