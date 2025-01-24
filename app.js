@@ -129,23 +129,23 @@ app.post("/submit", function(req, resp){
 // *Search GET methods
 // Gets food from the menu based on diet and type
 app.get("/search", function(req, resp){
-    let searchIngredient = req.query.ingredients;
+    let searchIngredient = req.query.ingredients || "all";
     let searchAmount = req.query.maxIngredients || 15;
-    // If no ingredient is selected
-    if (searchIngredient == "-------"){
-        return
-    };
     // Stores the JSON data to be returned
     let data = {drinks: []};
     // Iterate through the drinks
     for (let drink of jsonContent.drinks){
         if (drink.numberIngredients <= searchAmount){
-            let allIngredients = new Array();
-            for (let i = 1; i <= drink.numberIngredients; i++){
-                allIngredients.push(drink["strIngredient"+i]);
-            };
-            if (allIngredients.includes(searchIngredient)){
-                data.drinks.push(drink)
+            if (searchIngredient == "all"){
+                data.drinks.push(drink);
+            } else {
+                let allIngredients = new Array();
+                for (let i = 1; i <= drink.numberIngredients; i++){
+                    allIngredients.push(drink["strIngredient"+i]);
+                };
+                if (allIngredients.includes(searchIngredient)){
+                    data.drinks.push(drink)
+                }
             }
         }
     };
