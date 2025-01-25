@@ -28,35 +28,35 @@ app.post("/submit", function(req, resp){
     // Gets form data
     let newName = req.body.drinkName.toUpperCase();
     let newInstructions = req.body.drinkInst;
-    let newIngredient1 = req.body.drinkIngr1;
+    let newIngredient1 = req.body.drinkIngr1.toLowerCase();
     let newAmount1 = req.body.drinkIngrAm1;
-    let newIngredient2 = req.body.drinkIngr2;
+    let newIngredient2 = req.body.drinkIngr2.toLowerCase();
     let newAmount2 = req.body.drinkIngrAm2;
-    let newIngredient3 = req.body.drinkIngr3 || null;
+    let newIngredient3 = req.body.drinkIngr3.toLowerCase() || null;
     let newAmount3 = req.body.drinkIngrAm3 || null;
-    let newIngredient4 = req.body.drinkIngr4 || null;
+    let newIngredient4 = req.body.drinkIngr4.toLowerCase() || null;
     let newAmount4 = req.body.drinkIngrAm4 || null;
-    let newIngredient5 = req.body.drinkIngr5 || null;
+    let newIngredient5 = req.body.drinkIngr5.toLowerCase() || null;
     let newAmount5 = req.body.drinkIngrAm5 || null;
-    let newIngredient6 = req.body.drinkIngr6 || null;
+    let newIngredient6 = req.body.drinkIngr6.toLowerCase() || null;
     let newAmount6 = req.body.drinkIngrAm6 || null;
-    let newIngredient7 = req.body.drinkIngr7 || null;
+    let newIngredient7 = req.body.drinkIngr7.toLowerCase() || null;
     let newAmount7 = req.body.drinkIngrAm7 || null;
-    let newIngredient8 = req.body.drinkIngr8 || null;
+    let newIngredient8 = req.body.drinkIngr8.toLowerCase() || null;
     let newAmount8 = req.body.drinkIngrAm8 || null;
-    let newIngredient9 = req.body.drinkIngr9 || null;
+    let newIngredient9 = req.body.drinkIngr9.toLowerCase() || null;
     let newAmount9 = req.body.drinkIngrAm9 || null;
-    let newIngredient10 = req.body.drinkIngr10 || null;
+    let newIngredient10 = req.body.drinkIngr10.toLowerCase() || null;
     let newAmount10 = req.body.drinkIngrAm10 || null;
-    let newIngredient11 = req.body.drinkIngr11 || null;
+    let newIngredient11 = req.body.drinkIngr11.toLowerCase() || null;
     let newAmount11 = req.body.drinkIngrAm11 || null;
-    let newIngredient12 = req.body.drinkIngr12 || null;
+    let newIngredient12 = req.body.drinkIngr12.toLowerCase() || null;
     let newAmount12 = req.body.drinkIngrAm12 || null;
-    let newIngredient13 = req.body.drinkIngr13 || null;
+    let newIngredient13 = req.body.drinkIngr13.toLowerCase() || null;
     let newAmount13 = req.body.drinkIngrAm13 || null;
-    let newIngredient14 = req.body.drinkIngr14 || null;
+    let newIngredient14 = req.body.drinkIngr14.toLowerCase() || null;
     let newAmount14 = req.body.drinkIngrAm14 || null;
-    let newIngredient15 = req.body.drinkIngr15 || null;
+    let newIngredient15 = req.body.drinkIngr15.toLowerCase() || null;
     let newAmount15 = req.body.drinkIngrAm15 || null;
 
     // Input Validation
@@ -109,8 +109,8 @@ app.post("/submit", function(req, resp){
         strIngredient15: newIngredient15,
         strIngredientAmount15: newAmount15,
     };
-    
 
+    // Add new ingredients to data.json
     let i = 1;
     while (i < 16 && newDrink["strIngredient"+i] != null){
         if (!jsonContent.ingredients.includes(newDrink["strIngredient"+i])){
@@ -126,11 +126,21 @@ app.post("/submit", function(req, resp){
     resp.send(200);
 });
 
-// *Search GET methods
-// Gets food from the menu based on diet and type
+// *Search GET method
 app.get("/search", function(req, resp){
-    let searchIngredient = req.query.ingredients || "all";
+    // Input validation
+    let searchIngredient = req.query.ingredients.toLowerCase() || "all";
     let searchAmount = req.query.maxIngredients || 15;
+
+    if (searchAmount < 2 || searchAmount > 15){
+        resp.send(422);
+    }
+
+    // Returns all drinks in data.json
+    if (searchIngredient == "all" && searchAmount == 15){
+        resp.send({drinks: jsonContent.drinks});
+        return
+    };
     // Stores the JSON data to be returned
     let data = {drinks: []};
     // Iterate through the drinks
