@@ -21,18 +21,7 @@
             <form action="http://127.0.0.1:5000/submit" method="POST" id="submit">
                 <div class="container">
                     <div class="row">
-                        <div class="col-md-6">
-                            <label for="drinkImg">Image:</label>
-                            <input type="file" id="drinkImg" name="drinkImg"><br>
-    
-                            <div id="drop_zone">
-                                <p>Drag one or more files to this <i>drop zone</i>.</p>
-                            </div>
-    
-                            <label for="drinkInst">Instructions:</label><br>
-                            <textarea name="drinkInst" cols="70" rows="4" required></textarea><br>
-                            <input type="submit" value="Share">
-                        </div>
+                        
                         <div class="col-md-6">
                             <label for="drinkName">Name:</label><br>
                             <input type="text" id="drinkName" name="drinkName" required><br><br>
@@ -50,8 +39,20 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <label for="drinkImg">Image:</label>
+                            <input type="file" id="drinkImg" name="drinkImg"><br>
+    
+                            <div id="drop_zone">
+                                <p>Drag one or more files to this <i>drop zone</i>.</p>
+                            </div>
+    
+                            <label for="drinkInst">Instructions:</label><br>
+                            <textarea name="drinkInst" cols="70" rows="4" required></textarea><br>
+                        </div>
                         <br>
                     </div>
+                    <input type="submit" value="Share">
                 </div>
             </form>
             <hr>
