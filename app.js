@@ -27,70 +27,111 @@ app.get("/", function(req, resp){
 app.post("/submit", function(req, resp){
     console.log(req.body);
     let emptyFormData = {
-        drinkName: null,
-        drinkInst: null,
-        drinkIngr1: null,
-        drinkIngrAm1: null,
-        drinkIngr2: null,
-        drinkIngrAm2: null,
-        drinkIngr3: null,
-        drinkIngrAm3: null,
-        drinkIngr4: null,
-        drinkIngrAm4: null,
-        drinkIngr5: null,
-        drinkIngrAm5: null,
-        drinkIngr6: null,
-        drinkIngrAm6: null,
-        drinkIngr7: null,
-        drinkIngrAm7: null,
-        drinkIngr8: null,
-        drinkIngrAm8: null,
-        drinkIngr9: null,
-        drinkIngrAm9: null,
-        drinkIngr10: null,
-        drinkIngrAm10: null,
-        drinkIngr11: null,
-        drinkIngrAm11: null,
-        drinkIngr12: null,
-        drinkIngrAm12: null,
-        drinkIngr13: null,
-        drinkIngrAm13: null,
-        drinkIngr14: null,
-        drinkIngrAm14: null,
-        drinkIngr15: null,
-        drinkIngrAm15: null
+        strName: null,
+        strInstructions: null,
+        numberIngredients: 0,
+        strIngredient1: null,
+        strIngredientAmount1: null,
+        strIngredient2: null,
+        strIngredientAmount2: null,
+        strIngredient3: null,
+        strIngredientAmount3: null,
+        strIngredient4: null,
+        strIngredientAmount4: null,
+        strIngredient5: null,
+        strIngredientAmount5: null,
+        strIngredient6: null,
+        strIngredientAmount6: null,
+        strIngredient7: null,
+        strIngredientAmount7: null,
+        strIngredient8: null,
+        strIngredientAmount8: null,
+        strIngredient9: null,
+        strIngredientAmount9: null,
+        strIngredient10: null,
+        strIngredientAmount10: null,
+        strIngredient11: null,
+        strIngredientAmount11: null,
+        strIngredient12: null,
+        strIngredientAmount12: null,
+        strIngredient13: null,
+        strIngredientAmount13: null,
+        strIngredient14: null,
+        strIngredientAmount14: null,
+        strIngredient15: null,
+        strIngredientAmount15: null
     };
     let newDrinkData = {...emptyFormData, ...req.body};
     console.log(newDrinkData);
-    /* Input Validation:
-    1. Check only valid params are passed
-    2. Check required params are not null (name, instructions, 2 ingredients)
+
+    /** Input Validation:
+     * 1. Check only valid params are passed
+     * 2. Check required params are not null (name, instructions, 2 ingredients with amounts)
+     * 3. Check drink name is unique
+     * 4. Check ingredients and amounts are in pairs
     */
-    // Check for empty required inputs
     if (Object.keys(newDrinkData).length != 32){
         resp.send(422);
         return;
     }
-    if (!newDrinkData.drinkName || !newDrinkData.drinkInst || !newDrinkData.drinkIngr1 || !newDrinkData.drinkIngrAm1 || !newDrinkData.drinkIngr2 || !newDrinkData.drinkIngrAm2){
+    if (!newDrinkData.strName || !newDrinkData.strInstructions || !newDrinkData.strIngredient1 || !newDrinkData.strIngredientAmount1 || !newDrinkData.strIngredient2 || !newDrinkData.strIngredientAmount2){
         resp.send(422);
         return;
     }
-    // Checks if there is a drink with the same name
     for (let drink of jsonContent.drinks){
         if (drink.strName == newDrinkData.strName){
             resp.send(422);
             return;
         }
     }
-    // Add new ingredients to data.json
-    let i = 1;
-    while (i < 16 && newDrinkData["strIngredient"+i] != null){
-        if (!jsonContent.ingredients.includes(newDrinkData["strIngredient"+i])){
-            jsonContent.ingredients.push(newDrinkData["strIngredient"+i]);
+    for (let i = 1; i < 16; i++){
+        //? (!a != !b) == (a XOR b) from user `John Kugelman` on https://stackoverflow.com/questions/4540422/why-is-there-no-logical-xor
+        if (!newDrinkData["strIngredient"+i] != !newDrinkData["strIngredientAmount"+i]){
+            resp.send(422);
+            return;
+        } else if (newDrinkData["strIngredient"+i] == null && newDrinkData["strIngredientAmount"+i] == null){
+            break;
         }
-        i++;
     }
-    newDrinkData.numberIngredients = i-1;
+
+    /** Input Sanitisation
+     * 1. Change drink name to upper case
+     * 2. Change ingredients to lower case
+     * 3. Shift ingredients to earliest position
+     */
+    newDrinkData.strName = newDrinkData.strName.toUpperCase();
+    let numberIngredients = 0;
+    // Flags for if the ordering is valid
+    let foundNull = false;  // Changed to `true` after first `null` is found
+    let isValid = true;  // Changed to `false` after ingredient found after `null`
+    let ingredientAmountPairs = new Array();
+    for (let i = 1; i < 16; i++){
+        let ingredient = newDrinkData["strIngredient"+i];
+        if (ingredient != null){
+            newDrinkData["strIngredient"+i] = ingredient.toLowerCase();
+            ingredientAmountPairs.push([ingredient, newDrinkData["strIngredientAmount"+i]])
+            // Add to list if not in data.json
+            if (!jsonContent.ingredients.includes(ingredient)){
+                jsonContent.ingredients.push(ingredient);
+            }
+            numberIngredients = numberIngredients++;
+            if (foundNull && isValid){
+                isValid = false;
+            }
+        } else if (!foundNull){
+            foundNull = true;
+        }
+    }
+    for (let i = 1; i < 16; i++){
+        if (i <= ingredientAmountPairs.length){
+            newDrinkData["strIngredient"+i] = ingredientAmountPairs[i-1][0];
+            newDrinkData["strIngredientAmount"+i] = ingredientAmountPairs[i-1][1];
+        } else {
+            newDrinkData["strIngredient"+i] = null;
+            newDrinkData["strIngredientAmount"+i] = null;
+        }
+    }
+    
     // Pushes drink to `data.json`
     jsonContent.drinks.push(newDrinkData);
     let data = JSON.stringify(jsonContent);
