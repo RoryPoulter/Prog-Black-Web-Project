@@ -10,15 +10,21 @@ describe('Test the things service', () => {
 	    .expect(200);
     });
 
-    test('GET /search?ingredient=vodka returns JSON', () => {
+    test('GET / returns HTML', () => {
         return request(app)
-	    .get('/search?ingredient=vodka')
+        .get('/')
+        .expect('Content-type', /html/);
+    });
+
+    test('GET /search?ingredients=vodka returns JSON', () => {
+        return request(app)
+	    .get('/search?ingredients=vodka')
 	    .expect('Content-type', /json/);
     });
 
-    test('GET /search?ingredient=invalid returns empty JSON', () => {
+    test('GET /search?ingredients=invalid returns empty JSON', () => {
         return request(app)
-	    .get('/search?ingredient=invalid')
+	    .get('/search?ingredients=invalid')
 	    .expect('{"drinks":null}');
     });
 
@@ -28,5 +34,11 @@ describe('Test the things service', () => {
         .post('/submit')
         .send(params)
 	    .expect(422);
+    });
+
+    test('GET /ingredients returns JSON', () => {
+        return request(app)
+	    .get('/ingredients')
+	    .expect('Content-type', /json/);
     });
 });
