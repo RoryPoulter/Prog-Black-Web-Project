@@ -25,102 +25,74 @@ app.get("/", function(req, resp){
 
 // Adds the data to the JSON
 app.post("/submit", function(req, resp){
-    // Gets form data
-    let newName = req.body.drinkName.toUpperCase();
-    let newInstructions = req.body.drinkInst;
-    let newIngredient1 = req.body.drinkIngr1.toLowerCase();
-    let newAmount1 = req.body.drinkIngrAm1;
-    let newIngredient2 = req.body.drinkIngr2.toLowerCase();
-    let newAmount2 = req.body.drinkIngrAm2;
-    let newIngredient3 = req.body.drinkIngr3.toLowerCase() || null;
-    let newAmount3 = req.body.drinkIngrAm3 || null;
-    let newIngredient4 = req.body.drinkIngr4.toLowerCase() || null;
-    let newAmount4 = req.body.drinkIngrAm4 || null;
-    let newIngredient5 = req.body.drinkIngr5.toLowerCase() || null;
-    let newAmount5 = req.body.drinkIngrAm5 || null;
-    let newIngredient6 = req.body.drinkIngr6.toLowerCase() || null;
-    let newAmount6 = req.body.drinkIngrAm6 || null;
-    let newIngredient7 = req.body.drinkIngr7.toLowerCase() || null;
-    let newAmount7 = req.body.drinkIngrAm7 || null;
-    let newIngredient8 = req.body.drinkIngr8.toLowerCase() || null;
-    let newAmount8 = req.body.drinkIngrAm8 || null;
-    let newIngredient9 = req.body.drinkIngr9.toLowerCase() || null;
-    let newAmount9 = req.body.drinkIngrAm9 || null;
-    let newIngredient10 = req.body.drinkIngr10.toLowerCase() || null;
-    let newAmount10 = req.body.drinkIngrAm10 || null;
-    let newIngredient11 = req.body.drinkIngr11.toLowerCase() || null;
-    let newAmount11 = req.body.drinkIngrAm11 || null;
-    let newIngredient12 = req.body.drinkIngr12.toLowerCase() || null;
-    let newAmount12 = req.body.drinkIngrAm12 || null;
-    let newIngredient13 = req.body.drinkIngr13.toLowerCase() || null;
-    let newAmount13 = req.body.drinkIngrAm13 || null;
-    let newIngredient14 = req.body.drinkIngr14.toLowerCase() || null;
-    let newAmount14 = req.body.drinkIngrAm14 || null;
-    let newIngredient15 = req.body.drinkIngr15.toLowerCase() || null;
-    let newAmount15 = req.body.drinkIngrAm15 || null;
-
-    // Input Validation
+    console.log(req.body);
+    let emptyFormData = {
+        drinkName: null,
+        drinkInst: null,
+        drinkIngr1: null,
+        drinkIngrAm1: null,
+        drinkIngr2: null,
+        drinkIngrAm2: null,
+        drinkIngr3: null,
+        drinkIngrAm3: null,
+        drinkIngr4: null,
+        drinkIngrAm4: null,
+        drinkIngr5: null,
+        drinkIngrAm5: null,
+        drinkIngr6: null,
+        drinkIngrAm6: null,
+        drinkIngr7: null,
+        drinkIngrAm7: null,
+        drinkIngr8: null,
+        drinkIngrAm8: null,
+        drinkIngr9: null,
+        drinkIngrAm9: null,
+        drinkIngr10: null,
+        drinkIngrAm10: null,
+        drinkIngr11: null,
+        drinkIngrAm11: null,
+        drinkIngr12: null,
+        drinkIngrAm12: null,
+        drinkIngr13: null,
+        drinkIngrAm13: null,
+        drinkIngr14: null,
+        drinkIngrAm14: null,
+        drinkIngr15: null,
+        drinkIngrAm15: null
+    };
+    let newDrinkData = {...emptyFormData, ...req.body};
+    console.log(newDrinkData);
+    /* Input Validation:
+    1. Check only valid params are passed
+    2. Check required params are not null (name, instructions, 2 ingredients)
+    */
     // Check for empty required inputs
-    if (!newName || !newInstructions || !newIngredient1 || !newAmount1 || !newIngredient2 || !newAmount2){
+    if (Object.keys(newDrinkData).length != 32){
+        resp.send(422);
+        return;
+    }
+    if (!newDrinkData.drinkName || !newDrinkData.drinkInst || !newDrinkData.drinkIngr1 || !newDrinkData.drinkIngrAm1 || !newDrinkData.drinkIngr2 || !newDrinkData.drinkIngrAm2){
         resp.send(422);
         return;
     }
     // Checks if there is a drink with the same name
     for (let drink of jsonContent.drinks){
-        if (drink.strName == newName){
+        if (drink.strName == newDrinkData.strName){
             resp.send(422);
             return;
         }
     }
-    // Formats data as object
-    let newDrink = {
-        strName: newName,
-        strInstructions: newInstructions,
-        strImageName: newName + ".png",
-        numberIngredients: 0,
-        strIngredient1: newIngredient1,
-        strIngredientAmount1: newAmount1,
-        strIngredient2: newIngredient2,
-        strIngredientAmount2: newAmount2,
-        strIngredient3: newIngredient3,
-        strIngredientAmount3: newAmount3,
-        strIngredient4: newIngredient4,
-        strIngredientAmount4: newAmount4,
-        strIngredient5: newIngredient5,
-        strIngredientAmount5: newAmount5,
-        strIngredient6: newIngredient6,
-        strIngredientAmount6: newAmount6,
-        strIngredient7: newIngredient7,
-        strIngredientAmount7: newAmount7,
-        strIngredient8: newIngredient8,
-        strIngredientAmount8: newAmount8,
-        strIngredient9: newIngredient9,
-        strIngredientAmount9: newAmount9,
-        strIngredient10: newIngredient10,
-        strIngredientAmount10: newAmount10,
-        strIngredient11: newIngredient11,
-        strIngredientAmount11: newAmount11,
-        strIngredient12: newIngredient12,
-        strIngredientAmount12: newAmount12,
-        strIngredient13: newIngredient13,
-        strIngredientAmount13: newAmount13,
-        strIngredient14: newIngredient14,
-        strIngredientAmount14: newAmount14,
-        strIngredient15: newIngredient15,
-        strIngredientAmount15: newAmount15,
-    };
-
     // Add new ingredients to data.json
     let i = 1;
-    while (i < 16 && newDrink["strIngredient"+i] != null){
-        if (!jsonContent.ingredients.includes(newDrink["strIngredient"+i])){
-            jsonContent.ingredients.push(newDrink["strIngredient"+i]);
+    while (i < 16 && newDrinkData["strIngredient"+i] != null){
+        if (!jsonContent.ingredients.includes(newDrinkData["strIngredient"+i])){
+            jsonContent.ingredients.push(newDrinkData["strIngredient"+i]);
         }
         i++;
     }
-    newDrink.numberIngredients = i-1;
+    newDrinkData.numberIngredients = i-1;
     // Pushes drink to `data.json`
-    jsonContent.drinks.push(newDrink);
+    jsonContent.drinks.push(newDrinkData);
     let data = JSON.stringify(jsonContent);
     fs.writeFileSync("./client/data/data.json", data);
     resp.send(200);
@@ -129,7 +101,7 @@ app.post("/submit", function(req, resp){
 // *Search GET method
 app.get("/search", function(req, resp){
     // Input validation
-    let searchIngredient = req.query.ingredients.toLowerCase() || "all";
+    let searchIngredient = (req.query.ingredients || "all").toLowerCase();
     let searchAmount = req.query.maxIngredients || 15;
 
     if (searchAmount < 2 || searchAmount > 15){
@@ -163,6 +135,10 @@ app.get("/search", function(req, resp){
         data.drinks = null
     };
     resp.send(data)
+});
+
+app.get("/ingredients", function(req, resp){
+    resp.send({ingredients: jsonContent.ingredients})
 });
 
 module.exports = app;
