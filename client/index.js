@@ -23,12 +23,12 @@ addIngredientButton.addEventListener("click", function(event){
     let newDiv = document.createElement("div");
     let newIngredient = document.createElement("input");
     newIngredient.type = "text";
-    newIngredient.id = "drinkIngr" + ingredientCount;
-    newIngredient.name = "drinkIngr" + ingredientCount;
+    newIngredient.id = "strIngredient" + ingredientCount;
+    newIngredient.name = "strIngredient" + ingredientCount;
     let newAmount = document.createElement("input");
     newAmount.type = "text";
-    newAmount.id = "drinkIngrAm" + ingredientCount;
-    newAmount.name = "drinkIngrAm" + ingredientCount;
+    newAmount.id = "strIngredientAmount" + ingredientCount;
+    newAmount.name = "strIngredientAmount" + ingredientCount;
     newAmount.setAttribute("class", "ingredient-amount");
 
     newDiv.appendChild(newIngredient);
