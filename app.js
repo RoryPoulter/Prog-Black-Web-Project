@@ -25,7 +25,6 @@ app.get("/", function(req, resp){
 
 // Adds the data to the JSON
 app.post("/submit", function(req, resp){
-    console.log(req.body);
     let emptyFormData = {
         strName: null,
         strInstructions: null,
@@ -62,7 +61,8 @@ app.post("/submit", function(req, resp){
         strIngredientAmount15: null
     };
     let newDrinkData = {...emptyFormData, ...req.body};
-    console.log(newDrinkData);
+    
+    delete newDrinkData.drinkImg;
 
     /** Input Validation:
      * 1. Check only valid params are passed
@@ -70,16 +70,19 @@ app.post("/submit", function(req, resp){
      * 3. Check drink name is unique
      * 4. Check ingredients and amounts are in pairs
     */
-    if (Object.keys(newDrinkData).length != 32){
+    if (Object.keys(newDrinkData).length != 33){
+        console.log(`Extra params passed (${Object.keys(newDrinkData).length})`);
         resp.send(422);
         return;
     }
     if (!newDrinkData.strName || !newDrinkData.strInstructions || !newDrinkData.strIngredient1 || !newDrinkData.strIngredientAmount1 || !newDrinkData.strIngredient2 || !newDrinkData.strIngredientAmount2){
+        console.log("Missing required inputs");
         resp.send(422);
         return;
     }
     for (let drink of jsonContent.drinks){
         if (drink.strName == newDrinkData.strName){
+            console.log(`Name '${newDrinkData.strName}' is not unique`)
             resp.send(422);
             return;
         }
@@ -87,10 +90,9 @@ app.post("/submit", function(req, resp){
     for (let i = 1; i < 16; i++){
         //? (!a != !b) == (a XOR b) from user `John Kugelman` on https://stackoverflow.com/questions/4540422/why-is-there-no-logical-xor
         if (!newDrinkData["strIngredient"+i] != !newDrinkData["strIngredientAmount"+i]){
+            console.log(`Ingredient-amount pair no. ${i} incomplete`)
             resp.send(422);
             return;
-        } else if (newDrinkData["strIngredient"+i] == null && newDrinkData["strIngredientAmount"+i] == null){
-            break;
         }
     }
 
@@ -107,14 +109,14 @@ app.post("/submit", function(req, resp){
     let ingredientAmountPairs = new Array();
     for (let i = 1; i < 16; i++){
         let ingredient = newDrinkData["strIngredient"+i];
-        if (ingredient != null){
+        if (ingredient){
             newDrinkData["strIngredient"+i] = ingredient.toLowerCase();
             ingredientAmountPairs.push([ingredient, newDrinkData["strIngredientAmount"+i]])
             // Add to list if not in data.json
             if (!jsonContent.ingredients.includes(ingredient)){
                 jsonContent.ingredients.push(ingredient);
             }
-            numberIngredients = numberIngredients++;
+            numberIngredients = numberIngredients + 1;
             if (foundNull && isValid){
                 isValid = false;
             }
@@ -131,7 +133,7 @@ app.post("/submit", function(req, resp){
             newDrinkData["strIngredientAmount"+i] = null;
         }
     }
-    
+    newDrinkData.numberIngredients = numberIngredients;
     // Pushes drink to `data.json`
     jsonContent.drinks.push(newDrinkData);
     let data = JSON.stringify(jsonContent);
