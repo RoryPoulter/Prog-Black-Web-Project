@@ -61,7 +61,7 @@ app.post("/submit", function(req, resp){
         strIngredientAmount15: null
     };
     let newDrinkData = {...emptyFormData, ...req.body};
-    
+    console.log(req.body);
     delete newDrinkData.drinkImg;
 
     /** Input Validation:
@@ -141,38 +141,78 @@ app.post("/submit", function(req, resp){
     resp.send(200);
 });
 
-// *Search GET method
+
+/**
+ * Checks if a drink meets the search requirements
+ * @param {object} drinkData The JSON data about the drink
+ * @param {string} ingredient The ingredient which should be in the drink
+ * @param {number} minAmount The minimum amount of ingredients allowed
+ * @param {number} maxAmount The maximum amount of ingredients allowed
+ * @returns {boolean} If the drink meets the search requirements
+ */
+function filterSearch(drinkData, ingredient, minAmount, maxAmount){
+    if (drinkData.numberIngredients > maxAmount || drinkData.numberIngredients < minAmount){
+        return false;
+    }
+    if (ingredient == "all"){
+        return true;
+    }
+    for (let i = 1; i <= drinkData.numberIngredients; i++){
+        if (drinkData["strIngredient"+i] == ingredient){
+            return true;
+        }
+    }
+    return false;
+}
+
+
+// * GET methods
 app.get("/search", function(req, resp){
     // Input validation
     let searchIngredient = (req.query.ingredients || "all").toLowerCase();
-    let searchAmount = req.query.maxIngredients || 15;
+    let minAmountIngredients = req.query.minIngredients || 2;
+    let maxAmountIngredients = req.query.maxIngredients || 15;
+    let isOldestFirst = (req.query.order || "oldest") == "oldest";
 
-    if (searchAmount < 2 || searchAmount > 15){
+    /** Input Validation:
+     * 1. Check `minAmountIngredients` is not greater than `maxAmountIngredients`
+     * 2. Check `minAmountIngredients` is in range 2 - 15 inclusive
+     * 3. Check `maxAmountIngredients` is in range 2 - 15 inclusive
+     */
+    if (minAmountIngredients > maxAmountIngredients){
+        console.log(`Query param 'minIngredients' greater than 'maxIngredients' (${minAmountIngredients} > ${maxAmountIngredients})`);
         resp.send(422);
     }
-
+    if (minAmountIngredients < 2 || minAmountIngredients > 15){
+        console.log(`Query param 'minIngredients' out of range (${minAmountIngredients})`);
+        resp.send(422);
+    }
+    if (maxAmountIngredients < 2 || maxAmountIngredients > 15){
+        console.log(`Query param 'maxIngredients' out of range (${maxAmountIngredients})`);
+        resp.send(422);
+    }
     // Returns all drinks in data.json
-    if (searchIngredient == "all" && searchAmount == 15){
+    if (searchIngredient == "all" && maxAmountIngredients == 15){
         resp.send({drinks: jsonContent.drinks});
         return
     };
     // Stores the JSON data to be returned
     let data = {drinks: []};
-    // Iterate through the drinks
-    for (let drink of jsonContent.drinks){
-        if (drink.numberIngredients <= searchAmount){
-            if (searchIngredient == "all"){
-                data.drinks.push(drink);
-            } else {
-                for (let i = 1; i <= drink.numberIngredients; i++){
-                    if (drink["strIngredient"+i] == searchIngredient){
-                        data.drinks.push(drink);
-                        break
-                    }
-                };
+
+    if (isOldestFirst){
+        for (let drink of jsonContent.drinks){
+            if (filterSearch(drink, searchIngredient, minAmountIngredients, maxAmountIngredients)){
+                data.drinks.push(drink)
+            }
+        };
+    } else {
+        for (let i = jsonContent.drinks.length - 1; i >= 0; i--){
+            if (filterSearch(jsonContent.drinks[i], searchIngredient, minAmountIngredients, maxAmountIngredients)){
+                data.drinks.push(jsonContent.drinks[i]);
             }
         }
-    };
+    }
+
     // If no drinks matched criteria
     if (data.drinks.length == 0){
         data.drinks = null

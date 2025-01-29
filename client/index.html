@@ -58,6 +58,7 @@
             <hr>
             <h3>Cocktail Search</h3>
             <h6>Find the next cocktail you'll love</h6>
+            <!-- GET form for searching recipes -->
             <form action="http://127.0.0.1:5000/search" id="search">
                 <label for="ingredients">Ingredient:</label>
                 <select name="ingredients" id="ingredients">
@@ -65,6 +66,11 @@
                 </select>
                 <label for="maxIngredients">Max ingredients:</label>
                 <input type="range" min="2" max="15" name="maxIngredients" id="maxIngredients">
+                <label for="order">Sort By:</label>
+                <select name="order" id="order">
+                    <option value="oldest">Oldest to Newest</option>
+                    <option value="newest">Newest to Oldest</option>
+                </select>
                 <input type="submit" value="Search">
             </form><br>
             <div class="container">
