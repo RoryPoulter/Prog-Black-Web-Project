@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: false })); //Parse URL-encoded bodies
 
 // Sends the HTML body to the client when visiting the url
 app.get("/", function(req, resp){
-    resp.sendFile("client/index.html");
+    resp.status(200).sendFile("client/index.html");
 });
 
 
@@ -72,36 +72,34 @@ app.post("/submit", function(req, resp){
     */
     if (Object.keys(newDrinkData).length != 33){
         console.log(`Extra params passed (${Object.keys(newDrinkData).length})`);
-        resp.send(422);
+        resp.status(422).send({error: `Extra params passed (${Object.keys(newDrinkData).length})`});
         return;
     }
     if (!newDrinkData.strName || !newDrinkData.strInstructions || !newDrinkData.strIngredient1 || !newDrinkData.strIngredientAmount1 || !newDrinkData.strIngredient2 || !newDrinkData.strIngredientAmount2){
-        console.log("Missing required inputs");
-        resp.send(422);
+        console.log("Missing required inputs")
+        resp.status(422).send({error: "Missing required inputs"});
         return;
     }
+    newDrinkData.strName = newDrinkData.strName.toUpperCase();
     for (let drink of jsonContent.drinks){
         if (drink.strName == newDrinkData.strName){
             console.log(`Name '${newDrinkData.strName}' is not unique`)
-            resp.send(422);
+            resp.status(422).send({error: `Name ${newDrinkData.strName} is not unique`});
             return;
         }
     }
     for (let i = 1; i < 16; i++){
         //? (!a != !b) == (a XOR b) from user `John Kugelman` on https://stackoverflow.com/questions/4540422/why-is-there-no-logical-xor
         if (!newDrinkData["strIngredient"+i] != !newDrinkData["strIngredientAmount"+i]){
-            console.log(`Ingredient-amount pair no. ${i} incomplete`)
-            resp.send(422);
+            resp.status(422).send({error: `Ingredient-amount pair no. ${i} incomplete`});
             return;
         }
     }
 
     /** Input Sanitisation
-     * 1. Change drink name to upper case
-     * 2. Change ingredients to lower case
-     * 3. Shift ingredients to earliest position
+     * 1. Change ingredients to lower case
+     * 2. Shift ingredients to earliest position
      */
-    newDrinkData.strName = newDrinkData.strName.toUpperCase();
     let numberIngredients = 0;
     // Flags for if the ordering is valid
     let foundNull = false;  // Changed to `true` after first `null` is found
@@ -180,20 +178,20 @@ app.get("/search", function(req, resp){
      * 3. Check `maxAmountIngredients` is in range 2 - 15 inclusive
      */
     if (minAmountIngredients > maxAmountIngredients){
-        console.log(`Query param 'minIngredients' greater than 'maxIngredients' (${minAmountIngredients} > ${maxAmountIngredients})`);
-        resp.send(422);
+        resp.status(422).send({error: `Query param minIngredients greater than maxIngredients (${minAmountIngredients} > ${maxAmountIngredients})`});
+        return
     }
-    if (minAmountIngredients < 2 || minAmountIngredients > 15){
-        console.log(`Query param 'minIngredients' out of range (${minAmountIngredients})`);
-        resp.send(422);
+    if (minAmountIngredients < 2){
+        resp.status(422).send({error: `Query param minIngredients out of range (${minAmountIngredients})`});
+        return
     }
-    if (maxAmountIngredients < 2 || maxAmountIngredients > 15){
-        console.log(`Query param 'maxIngredients' out of range (${maxAmountIngredients})`);
-        resp.send(422);
+    if (maxAmountIngredients > 15){
+        resp.status(422).send({error: `Query param maxIngredients out of range (${maxAmountIngredients})`});
+        return
     }
     // Returns all drinks in data.json
     if (searchIngredient == "all" && maxAmountIngredients == 15){
-        resp.send({drinks: jsonContent.drinks});
+        resp.status(200).send({drinks: jsonContent.drinks});
         return
     };
     // Stores the JSON data to be returned
@@ -217,11 +215,11 @@ app.get("/search", function(req, resp){
     if (data.drinks.length == 0){
         data.drinks = null
     };
-    resp.send(data)
+    resp.status(200).send(data)
 });
 
 app.get("/ingredients", function(req, resp){
-    resp.send({ingredients: jsonContent.ingredients})
+    resp.status(200).send({ingredients: jsonContent.ingredients})
 });
 
 module.exports = app;

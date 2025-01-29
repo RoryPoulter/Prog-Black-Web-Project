@@ -170,9 +170,10 @@ submitForm.addEventListener("submit", async function(event){
         );
         if (response.ok){
             const responseBody = await response.text();
-            console.log(responseBody)
+            console.log(responseBody);
         } else {
-            alert("Problem with POST request " + response.statusText);
+            const error = await response.json().error;
+            alert("Problem with POST request: " + error);
         }
     } catch(e) {
         alert(e);
