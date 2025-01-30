@@ -1,8 +1,6 @@
 // ? Code for uploading files with multer adapted from https://github.com/bezkoder/express-file-upload
 // Install required packages
 const fs = require('fs');
-const util = require("util");
-const path = require("path");
 const cors = require("cors");
 const express = require("express");
 const multer = require("multer");
@@ -42,46 +40,6 @@ let uploadFilePromise = multer({
 	storage: storage,
 	limits: { fileSize: maxSize },
 }).single("fileDrinkImage");
-
-// const uploadFile = util.promisify(uploadFilePromise);
-
-
-const upload = async (req, res) => {
-	try {
-		console.log(req.body);
-		await uploadFile(req, res);
-
-		if (req.file == undefined) {
-			return res.status(400).send({ message: "Please upload a file!" });
-		}
-		console.log(`strtext: ${req.body.strtext}`)
-        console.log(req.body)
-		if (fs.existsSync("./uploads/" + req.body.strtext + req.file.originalname)){
-			return res.status(400).send({
-				message: "Image already exists"
-			});
-		}
-		res.status(200).send({
-			message: "Uploaded the file successfully: " + req.file.originalname,
-		});
-	} catch (err) {
-		console.log(err);
-
-		if (err.code == "LIMIT_FILE_SIZE") {
-			return res.status(500).send({
-				message: "File size cannot be larger than 2MB!",
-			});
-		}
-		if (fs.existsSync("./uploads" + req.file.originalname)){
-			return res.status(200).send({
-				message: "Image uploaded"
-			});
-		}
-		res.status(500).send({
-			message: `Could not upload the file: ${req.file.originalname}. ${err}`,
-		});
-	}
-};
 
 
 // Sends the HTML body to the client when visiting the url
