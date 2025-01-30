@@ -1,6 +1,6 @@
 node_modules
 package-lock.json
-client/data/*
+*/data/*
 .vscode
 design
 *.cmd
