@@ -1,32 +1,100 @@
+// ? Code for uploading files with multer adapted from https://github.com/bezkoder/express-file-upload
 // Install required packages
 const fs = require('fs');
+const util = require("util");
+const path = require("path");
+const cors = require("cors");
 const express = require("express");
+const multer = require("multer");
 const app = express();
 
+const fileTypes = [".jpeg", ".jpg", ".png"];
+const maxSize = 2 * 1024 * 1024;
+global.__basedir = __dirname;
+var corsOptions = {origin: "http://localhost:8081"};
+
 // Creates the file `data.json` if it does not exist
-if (!fs.existsSync("./client/data/data.json")){
+if (!fs.existsSync("./resources/client/data/data.json")){
     let data = JSON.stringify({drinks:[], ingredients:[]});
-    fs.writeFileSync("./client/data/data.json", data);
+    fs.writeFileSync("./resources/data/data.json", data);
 }
 // Loads content from `data.json`
-const jsonContent = require("./client/data/data.json");
-// const { parseArgs } = require('util');
+const jsonContent = require("./resources/data/data.json");
 
 
-app.use(express.static('client'));
+app.use(cors(corsOptions));
+app.use(express.static("resources/client"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false })); //Parse URL-encoded bodies
 
+
+let storage = multer.diskStorage({
+	destination: (req, file, cb) => {
+		cb(null, __basedir + "/resources/uploads/");
+	},
+	filename: (req, file, cb) => {
+		console.log(file.originalname);
+		cb(null, file.originalname);
+	},
+});
+
+let uploadFilePromise = multer({
+	storage: storage,
+	limits: { fileSize: maxSize },
+}).single("fileDrinkImage");
+
+// const uploadFile = util.promisify(uploadFilePromise);
+
+
+const upload = async (req, res) => {
+	try {
+		console.log(req.body);
+		await uploadFile(req, res);
+
+		if (req.file == undefined) {
+			return res.status(400).send({ message: "Please upload a file!" });
+		}
+		console.log(`strtext: ${req.body.strtext}`)
+        console.log(req.body)
+		if (fs.existsSync("./resources/uploads/" + req.body.strtext + req.file.originalname)){
+			return res.status(400).send({
+				message: "Image already exists"
+			});
+		}
+		res.status(200).send({
+			message: "Uploaded the file successfully: " + req.file.originalname,
+		});
+	} catch (err) {
+		console.log(err);
+
+		if (err.code == "LIMIT_FILE_SIZE") {
+			return res.status(500).send({
+				message: "File size cannot be larger than 2MB!",
+			});
+		}
+		if (fs.existsSync("./resources/uploads" + req.file.originalname)){
+			return res.status(200).send({
+				message: "Image uploaded"
+			});
+		}
+		res.status(500).send({
+			message: `Could not upload the file: ${req.file.originalname}. ${err}`,
+		});
+	}
+};
+
+
 // Sends the HTML body to the client when visiting the url
 app.get("/", function(req, resp){
-    resp.status(200).sendFile("client/index.html");
+    resp.status(200).sendFile(__basedir + "/resources/client/index.html");
 });
 
 
 // Adds the data to the JSON
-app.post("/submit", function(req, resp){
+app.post("/submit", uploadFilePromise, function(req, resp){
     let emptyFormData = {
         strName: null,
+        strImagePath: null,
         strInstructions: null,
         numberIngredients: 0,
         strIngredient1: null,
@@ -62,7 +130,13 @@ app.post("/submit", function(req, resp){
     };
     let newDrinkData = {...emptyFormData, ...req.body};
     console.log(req.body);
-    delete newDrinkData.drinkImg;
+    delete newDrinkData.fileDrinkImage;
+
+    if (req.file == undefined || !fileTypes.includes(path.extname(req.file.originalname))){
+        newDrinkData.strImagePath = "https://placehold.co/600x400?text=No+Image";
+    } else {
+        newDrinkData.strImagePath = "../uploads/" + req.file.filename;
+    }
 
     /** Input Validation:
      * 1. Check only valid params are passed
@@ -76,14 +150,14 @@ app.post("/submit", function(req, resp){
         return;
     }
     if (!newDrinkData.strName || !newDrinkData.strInstructions || !newDrinkData.strIngredient1 || !newDrinkData.strIngredientAmount1 || !newDrinkData.strIngredient2 || !newDrinkData.strIngredientAmount2){
-        console.log("Missing required inputs")
+        console.log("Missing required inputs");
         resp.status(422).send({error: "Missing required inputs"});
         return;
     }
     newDrinkData.strName = newDrinkData.strName.toUpperCase();
     for (let drink of jsonContent.drinks){
         if (drink.strName == newDrinkData.strName){
-            console.log(`Name '${newDrinkData.strName}' is not unique`)
+            console.log(`Name '${newDrinkData.strName}' is not unique`);
             resp.status(422).send({error: `Name ${newDrinkData.strName} is not unique`});
             return;
         }
@@ -91,6 +165,7 @@ app.post("/submit", function(req, resp){
     for (let i = 1; i < 16; i++){
         //? (!a != !b) == (a XOR b) from user `John Kugelman` on https://stackoverflow.com/questions/4540422/why-is-there-no-logical-xor
         if (!newDrinkData["strIngredient"+i] != !newDrinkData["strIngredientAmount"+i]){
+            console.log(`Ingredient-amount pair no. ${i} incomplete`);
             resp.status(422).send({error: `Ingredient-amount pair no. ${i} incomplete`});
             return;
         }
@@ -135,7 +210,7 @@ app.post("/submit", function(req, resp){
     // Pushes drink to `data.json`
     jsonContent.drinks.push(newDrinkData);
     let data = JSON.stringify(jsonContent);
-    fs.writeFileSync("./client/data/data.json", data);
+    fs.writeFileSync("./resources/data/data.json", data);
     resp.send(200);
 });
 

@@ -48,37 +48,6 @@ subIngredientButton.addEventListener("click", function(event){
     allIngredientsDiv.removeChild(allIngredientsDiv.lastChild)
 })
 
-// const dropZoneDiv = document.getElementById("dropZone");
-// dropZoneDiv.addEventListener("drop", function(event){
-//     console.log("File(s) dropped");
-
-//     // Prevent default behavior (Prevent file from being opened)
-//     event.preventDefault();
-
-//     if (event.dataTransfer.items) {
-//         // Use DataTransferItemList interface to access the file(s)
-//         [...event.dataTransfer.items].forEach((item, i) => {
-//         // If dropped items aren't files, reject them
-//         if (item.kind === "file") {
-//             const file = item.getAsFile();
-//             console.log(`… file[${i}].name = ${file.name}`);
-//         }
-//         });
-//     } else {
-//         // Use DataTransfer interface to access the file(s)
-//         [...event.dataTransfer.files].forEach((file, i) => {
-//         console.log(`… file[${i}].name = ${file.name}`);
-//         });
-//     }
-// })
-// dropZoneDiv.addEventListener("dragover", function(event){
-//     console.log("File(s) in drop zone");
-
-//     // Prevent default behavior (Prevent file from being opened)
-//     event.preventDefault();
-// })
-
-
 /**
  * Gets the JSON data and adds the ingredients to the select element
  */
@@ -153,6 +122,7 @@ searchForm.addEventListener("submit", async function(event){
 })
 
 const submitForm = document.getElementById("submit");
+const fileInput = document.getElementById("fileDrinkImage");
 submitForm.addEventListener("submit", async function(event){
     try {
         event.preventDefault();
@@ -173,6 +143,7 @@ submitForm.addEventListener("submit", async function(event){
             console.log(responseBody);
         } else {
             const error = await response.json().error;
+            console.log(error);
             alert("Problem with POST request: " + error);
         }
     } catch(e) {

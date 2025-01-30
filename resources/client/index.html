@@ -18,10 +18,10 @@
         <div class="container-fluid">
             <h3>Submit Cocktail</h3>
             <h6>Share your own recipes</h6>
-            <form action="http://127.0.0.1:5000/submit" method="POST" id="submit">
+            <!-- POST form for submitting recipes -->
+            <form action="http://127.0.0.1:5000/submit" method="POST" id="submit" enctype="multipart/form-data">
                 <div class="container">
                     <div class="row">
-                        
                         <div class="col-md-6">
                             <label for="strName">Name:</label><br>
                             <input type="text" id="strName" name="strName" required><br><br>
@@ -41,12 +41,7 @@
                         </div>
                         <div class="col-md-6">
                             <label for="drinkImg">Image:</label>
-                            <input type="file" id="drinkImg" name="drinkImg"><br>
-    
-                            <div id="drop_zone">
-                                <p>Drag one or more files to this <i>drop zone</i>.</p>
-                            </div>
-    
+                            <input type="file" id="fileDrinkImage" name="fileDrinkImage"><br>
                             <label for="strInstructions">Instructions:</label><br>
                             <textarea name="strInstructions" cols="70" rows="4" required></textarea><br>
                         </div>
