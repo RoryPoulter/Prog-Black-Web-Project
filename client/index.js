@@ -78,6 +78,9 @@ function createDrinkDiv(drinkData){
     drinkDiv.setAttribute("class", "drink-div")
     let drinkTitle = document.createElement("h4");
     drinkTitle.innerHTML = drinkData.strName;
+    let drinkImage = document.createElement("img");
+    drinkImage.src = drinkData.strImagePath;
+    drinkImage.alt = drinkData.strName;
     let drinkInstructions = document.createElement("p");
     drinkInstructions.innerHTML = "<b>Instructions:</b> " + drinkData.strInstructions;
     let p = document.createElement("p");
@@ -97,7 +100,7 @@ function createDrinkDiv(drinkData){
         ingredientsTable.appendChild(tableRow);
     };
 
-    drinkDiv.append(drinkTitle, p, ingredientsTable, drinkInstructions);
+    drinkDiv.append(drinkTitle, drinkImage, p, ingredientsTable, drinkInstructions);
     parentDiv.appendChild(drinkDiv);
     return parentDiv
 };
@@ -150,9 +153,6 @@ submitForm.addEventListener("submit", async function(event){
         } else {
             let t = await response.text();
             console.log(t);
-            // const error = await response.json().error;
-            // console.log(error);
-            // alert("Problem with POST request: " + error);
         }
     } catch(e) {
         alert(e);
