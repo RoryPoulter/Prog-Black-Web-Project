@@ -14,27 +14,27 @@ global.__basedir = __dirname;
 var corsOptions = {origin: "http://localhost:8081"};
 
 // Creates the file `data.json` if it does not exist
-if (!fs.existsSync("./resources/client/data/data.json")){
+if (!fs.existsSync("./client/data/data.json")){
     let data = JSON.stringify({drinks:[], ingredients:[]});
-    fs.writeFileSync("./resources/data/data.json", data);
+    fs.writeFileSync("./client/data/data.json", data);
 }
 // Loads content from `data.json`
-const jsonContent = require("./resources/data/data.json");
+const jsonContent = require("./client/data/data.json");
 
 
 app.use(cors(corsOptions));
-app.use(express.static("resources/client"));
+app.use(express.static("client"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false })); //Parse URL-encoded bodies
 
 
 let storage = multer.diskStorage({
 	destination: (req, file, cb) => {
-		cb(null, __basedir + "/resources/uploads/");
+		cb(null, __basedir + "/client/uploads/");
 	},
 	filename: (req, file, cb) => {
-		console.log(file.originalname);
-		cb(null, file.originalname);
+        let fileName = req.body.strName.toUpperCase() + "." + file.originalname.split(".").slice(-1);
+		cb(null, fileName);
 	},
 });
 
@@ -56,7 +56,7 @@ const upload = async (req, res) => {
 		}
 		console.log(`strtext: ${req.body.strtext}`)
         console.log(req.body)
-		if (fs.existsSync("./resources/uploads/" + req.body.strtext + req.file.originalname)){
+		if (fs.existsSync("./uploads/" + req.body.strtext + req.file.originalname)){
 			return res.status(400).send({
 				message: "Image already exists"
 			});
@@ -72,7 +72,7 @@ const upload = async (req, res) => {
 				message: "File size cannot be larger than 2MB!",
 			});
 		}
-		if (fs.existsSync("./resources/uploads" + req.file.originalname)){
+		if (fs.existsSync("./uploads" + req.file.originalname)){
 			return res.status(200).send({
 				message: "Image uploaded"
 			});
@@ -86,7 +86,7 @@ const upload = async (req, res) => {
 
 // Sends the HTML body to the client when visiting the url
 app.get("/", function(req, resp){
-    resp.status(200).sendFile(__basedir + "/resources/client/index.html");
+    resp.status(200).sendFile(__basedir + "/client/index.html");
 });
 
 
@@ -129,13 +129,10 @@ app.post("/submit", uploadFilePromise, function(req, resp){
         strIngredientAmount15: null
     };
     let newDrinkData = {...emptyFormData, ...req.body};
-    console.log(req.body);
-    delete newDrinkData.fileDrinkImage;
-
-    if (req.file == undefined || !fileTypes.includes(path.extname(req.file.originalname))){
-        newDrinkData.strImagePath = "https://placehold.co/600x400?text=No+Image";
+    if (req.file != undefined){
+        newDrinkData.strImagePath = "./uploads/" + req.file.filename;
     } else {
-        newDrinkData.strImagePath = "../uploads/" + req.file.filename;
+        newDrinkData.strImagePath = "https://placehold.co/200x200?text=No+Image";
     }
 
     /** Input Validation:
@@ -144,7 +141,7 @@ app.post("/submit", uploadFilePromise, function(req, resp){
      * 3. Check drink name is unique
      * 4. Check ingredients and amounts are in pairs
     */
-    if (Object.keys(newDrinkData).length != 33){
+    if (Object.keys(newDrinkData).length != 34){
         console.log(`Extra params passed (${Object.keys(newDrinkData).length})`);
         resp.status(422).send({error: `Extra params passed (${Object.keys(newDrinkData).length})`});
         return;
@@ -210,7 +207,7 @@ app.post("/submit", uploadFilePromise, function(req, resp){
     // Pushes drink to `data.json`
     jsonContent.drinks.push(newDrinkData);
     let data = JSON.stringify(jsonContent);
-    fs.writeFileSync("./resources/data/data.json", data);
+    fs.writeFileSync("./client/data/data.json", data);
     resp.send(200);
 });
 

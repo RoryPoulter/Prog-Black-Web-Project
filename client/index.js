@@ -126,25 +126,33 @@ const fileInput = document.getElementById("fileDrinkImage");
 submitForm.addEventListener("submit", async function(event){
     try {
         event.preventDefault();
-        const formData = new FormData(submitForm);
-        const formJson = JSON.stringify(Object.fromEntries(formData.entries()));
-        console.log("Form data: ", formData);
+        const formData = new FormData();
+        for (let element of submitForm.elements){
+            if (element.type == "text" || element.type == "textarea"){
+                formData.append(element.id, element.value);
+            }
+        }
+        if (fileInput.files.length > 0) {
+            formData.append('fileDrinkImage', fileInput.files[0]);
+        }
+        for (let entry of formData.entries()){
+            console.log(entry[0] + " : " + entry[1])
+        }
         const response = await fetch("/submit",
             {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: formJson
+                body: formData
             }
         );
         if (response.ok){
             const responseBody = await response.text();
             console.log(responseBody);
         } else {
-            const error = await response.json().error;
-            console.log(error);
-            alert("Problem with POST request: " + error);
+            let t = await response.text();
+            console.log(t);
+            // const error = await response.json().error;
+            // console.log(error);
+            // alert("Problem with POST request: " + error);
         }
     } catch(e) {
         alert(e);
