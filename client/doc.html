@@ -18,6 +18,7 @@
             <p>Returns the file <code>index.html</code></p>
             <hr>
 
+            <!-- GET /ingredients -->
             <h2>GET /ingredients</h2>
             <code>http://127.0.0.1:8080/ingredients</code>
             <p>Returns JSON data with an array of all the ingredients in the drinks. Has no query parameters.</p>
@@ -27,7 +28,119 @@
             <code>
                 {"ingredients": ["vodka", "orange juice", "gin", "white rum", "dark rum", "tonic water", "cola", "cranberry juice", "simple syrup", "soda water", "mint leaves", "daiquiri bitters", "amaretto", "cherry brandy", "whole milk", "single cream", "spiced rum", "blue curaçao", "lime juice", "apple juice", "lemon-lime soda", "dry vermouth", "blanco tequila", "lemon juice", "bianco vermouth", "margarita bitters"]}
             </code>
+            <hr>
+
+            <!-- GET /search -->
+            <h2>GET /search</h2>
+            <p>Returns recipes in the API.</p>
+            <h3>Query Params</h3>
+            <h6><code>ingredients</code> | string | Optional | Defaults to 'all'</h6>
+            <p>The ingredient which is included in all the recipes returned by the API. By default has value 'all' which does not filter by ingredients.</p>
+            <h6><code>maxIngredients</code> | integer | Optional | Defaults to 15</h6>
+            <p>The maximum number of ingredients in each of the recipes returned by the API. Must be within the range 2 to 15 inclusive. By default has value 15 which does not filter by maximum number of ingredients. If maxIngredients is out of range, the HTTP code 400 is returned with an error message explaining the problem.</p>
+            <h6><code>minIngredients</code> | integer | Optional | Defaults to 2</h6>
+            <p>The minimum number of ingredients in each of the recipes returned by the API. Must be within the range 2 to 15 inclusive and must be less than or equal to maxIngredients. By default has value 2 which does not filter by minimum number of ingredients. If minIngredients is out of range, the HTTP code 400 is returned with an error message explaining the problem.</p>
+            <h6><code>order</code> | string | Optional | Defaults to 'oldest'</h6>
+            <p>The order in which the results are displayed. Defaults to 'oldest' unless parameter equals 'newest'.</p>
+
+            <h4>Example Request 1 - Valid search with results</h4>
+            <code>curl "http://127.0.0.1:8080/search?ingredients=amaretto"</code>
+            <h4>Response</h4>
+            <code>{
+                "drinks": [
+                  {
+                    "strName": "ARTLANTIC",
+                    "strImagePath": "https://placehold.co/200x200?text=No+Image",
+                    "strInstructions": "Shake all ingredients with ice, strain into an ice-filled glass and garnish with an orange wedge.",
+                    "numberIngredients": 5,
+                    "strIngredient1": "spiced rum",
+                    "strIngredientAmount1": "30ml",
+                    "strIngredient2": "amaretto",
+                    "strIngredientAmount2": "15ml",
+                    "strIngredient3": "blue curaçao",
+                    "strIngredientAmount3": "15ml",
+                    "strIngredient4": "lime juice",
+                    "strIngredientAmount4": "15ml",
+                    "strIngredient5": "apple juice",
+                    "strIngredientAmount5": "90ml",
+                    "strIngredient6": null,
+                    "strIngredientAmount6": null,
+                    "strIngredient7": null,
+                    "strIngredientAmount7": null,
+                    "strIngredient8": null,
+                    "strIngredientAmount8": null,
+                    "strIngredient9": null,
+                    "strIngredientAmount9": null,
+                    "strIngredient10": null,
+                    "strIngredientAmount10": null,
+                    "strIngredient11": null,
+                    "strIngredientAmount11": null,
+                    "strIngredient12": null,
+                    "strIngredientAmount12": null,
+                    "strIngredient13": null,
+                    "strIngredientAmount13": null,
+                    "strIngredient14": null,
+                    "strIngredientAmount14": null,
+                    "strIngredient15": null,
+                    "strIngredientAmount15": null
+                  }
+                ]
+              }
+            </code>
+
+            <h4>Example Request 2 - Valid search with no results</h4>
+            <code>curl "http://127.0.0.1:8080/search?minIngredients=14"</code>
+            <h4>Response</h4>
+            <code>{"drinks": null}</code>
+
+            <h4>Example Request 3 - Invalid search</h4>
+            <code>curl "http://127.0.0.1:8080/search?minIngredients=7&maxIngredients=6</code>
+            <h4>Response</h4>
+            <code>{"error": "Query param minIngredients greater than maxIngredients (7 > 6)"}</code>
+            <hr>
+
+            <!-- DELETE /delete/:recipe -->
+            <h2>DELETE /delete/:recipe</h2>
+            <p>Deletes a recipe of a given name from the API.</p>
+            <h3>Query Params</h3>
+            <h6><code>recipe</code> | string | Required</h6>
+            <p>The name of the recipe in the API. Not case-sensitive as converted to upper case on the server side.</p>
+
+            <h4>Example Request</h4>
+            <code>curl -X DELETE "http://127.0.0.1:8080/delete/artlantic" -H "Accept: application/json"</code>
+            <h4>Response</h4>
+            <code>{"message":"Recipe successfully deleted"}</code>
+            <hr>
+
+            <!-- POST /submit -->
+            <h2>POST /submit</h2>
+            <p>Adds a recipe to the API.</p>
+            <h3>Request Body</h3>
+            <h6><code>strName</code> | string | Required</h6>
+            <p>The name of the recipe in the cocktail.</p>
+            <h6><code>strInstructions</code> | string | Required</h6>
+            <p>The instructions for making the cocktail.</p>
+            <h6><code>strIngredient1</code> | string | Required</h6>
+            <p>The name of the first ingredient in the cocktail.</p>
+            <h6><code>strIngredientAmount1</code> | string | Required</h6>
+            <p>The amount of the first ingredient in the cocktail.</p>
+            <h6><code>strIngredient2</code> | string | Required</h6>
+            <p>The name of the second ingredient in the cocktail.</p>
+            <h6><code>strIngredientAmount2</code> | string | Required</h6>
+            <p>The amount of the second ingredient in the cocktail.</p>
+            <h6><code>strIngredient3 - strIngredient15</code> | string | Optional</h6>
+            <p>The names of the third to fifteenth ingredients in the cocktail.</p>
+            <h6><code>strIngredientAmount3 - strIngredientAmount15</code> | string | Optional</h6>
+            <p>The amounts of the third to fifteenth ingredients in the cocktail.</p>
+            <h6><code>fileDrinkImage</code> | file | Optional</h6>
+            <p>An image of the cocktail. If none is uploaded, a placeholder image is used.</p>
+
+            <h4>Example Request</h4>
+            <code>curl http://127.0.0.1:8080/submit -H "Content-Type: application/json" -d "{\"strName\": \"screwdriver\",\"strInstructions\": \"Put ingredients in an ice-filled glass and stir with a screwdriver. Garnish with an orange slice.\",\"strIngredient1\": \"vodka\",\"strIngredientAmount1\": \"60ml\",\"strIngredient2\": \"orange juice\",\"strIngredientAmount2\": \"90ml\"}"</code>
+            <h4>Response</h4>
+            <code>{"message":"Recipe uploaded successfully"}</code>
         </div>
+        <a href="index.html">Back</a>
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     </body>
