@@ -166,7 +166,7 @@ app.post("/submit", uploadFilePromise, function(req, resp){
     jsonContent.drinks.push(newDrinkData);
     let data = JSON.stringify(jsonContent);
     fs.writeFileSync("./client/data/data.json", data);
-    resp.send(200);
+    resp.status(200).send({message: "Recipe uploaded successfully"});
 });
 
 
@@ -251,5 +251,24 @@ app.get("/search", function(req, resp){
 app.get("/ingredients", function(req, resp){
     resp.status(200).send({ingredients: jsonContent.ingredients})
 });
+
+app.delete("/delete/:recipe", function(req, resp){
+    let drinkName = req.params.recipe;
+    if (drinkName == undefined){
+        resp.status(400).send({error: "Missing required input"});
+        return;
+    }
+    drinkName = drinkName.toUpperCase();
+    for (let i = 0; i < jsonContent.drinks.length; i++){
+        if (jsonContent.drinks[i].strName == drinkName){
+            jsonContent.drinks.splice(i, 1);
+            let data = JSON.stringify(jsonContent);
+            fs.writeFileSync("./client/data/data.json", data);
+            resp.status(200).send({message: "Recipe successfully deleted"});
+            return
+        }
+    }
+    resp.status(400).send({error: `Recipe ${drinkName} not found`})
+})
 
 module.exports = app;

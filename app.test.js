@@ -67,6 +67,91 @@ describe('Test the things service', () => {
         .expect('{"error":"Query param minIngredients out of range (1)"}');
     });
 
+    // Test DELETE method input validation
+    test('DELETE /delete/ fails without parameter', () => {
+        return request(app)
+        .delete('/delete/')
+        .expect(404);
+    });
+
+    test('DELETE /delete/ fails and returns JSON', () => {
+        return request(app)
+        .delete('/delete/')
+        .expect('Content-type', /html/);
+    });
+
+    test('DELETE /delete/artlantic succeeds', () => {
+        return request(app)
+        .delete('/delete/artlantic')
+        .expect(200);
+    });
+
+    test('POST /submit succeeds and returns JSON', () => {
+        const params = {
+            'strName': 'artlantic',
+            'strInstructions': 'Shake all ingredients with ice, strain into an ice-filled glass and garnish with an orange wedge.',
+            'strIngredient1': 'spiced rum',
+            'strIngredientAmount1': '30ml',
+            'strIngredient2': 'amaretto',
+            'strIngredientAmount2': '15ml',
+            'strIngredient3': 'blue curaçao',
+            'strIngredientAmount3': '15ml',
+            'strIngredient4': 'lime juice',
+            'strIngredientAmount4': '15ml',
+            'strIngredient5': 'apple juice',
+            'strIngredientAmount5': '90ml'
+        };
+        return request(app)
+        .post('/submit')
+        .send(params)
+	    .expect('Content-type', /json/);
+    });
+
+    test('DELETE /delete/artlantic succeeds and returns JSON', () => {
+        return request(app)
+        .delete('/delete/artlantic')
+        .expect('Content-type', /json/);
+    });
+
+    test('POST /submit succeeds and returns message', () => {
+        const params = {
+            'strName': 'artlantic',
+            'strInstructions': 'Shake all ingredients with ice, strain into an ice-filled glass and garnish with an orange wedge.',
+            'strIngredient1': 'spiced rum',
+            'strIngredientAmount1': '30ml',
+            'strIngredient2': 'amaretto',
+            'strIngredientAmount2': '15ml',
+            'strIngredient3': 'blue curaçao',
+            'strIngredientAmount3': '15ml',
+            'strIngredient4': 'lime juice',
+            'strIngredientAmount4': '15ml',
+            'strIngredient5': 'apple juice',
+            'strIngredientAmount5': '90ml'
+        };
+        return request(app)
+        .post('/submit')
+        .send(params)
+	    .expect('{"message":"Recipe uploaded successfully"}');
+    });
+
+    test('DELETE /delete/artlantic succeeds and returns message', () => {
+        return request(app)
+        .delete('/delete/artlantic')
+        .expect('{"message":"Recipe successfully deleted"}');
+    });
+
+    test('DELETE /delete/artlantic fails and returns JSON', () => {
+        return request(app)
+        .delete('/delete/artlantic')
+        .expect('Content-type', /json/);
+    });
+
+    test('DELETE /delete/artlantic fails and sends correct error message', () => {
+        return request(app)
+        .delete('/delete/artlantic')
+        .expect('{"error":"Recipe ARTLANTIC not found"}');
+    });
+
     // Test submit POST method input validation
     test('POST /submit fails with empty inputs', () => {
         const params = {
@@ -115,18 +200,23 @@ describe('Test the things service', () => {
         return request(app)
         .post('/submit')
         .send(params)
-	    .expect('{"error":"Extra params passed (34)"}');
+	    .expect('{"error":"Extra params passed (35)"}');
     });
 
     test('POST /submit fails with incomplete ingredient-amount pairs', () => {
         const params = {
-            'strName': 'vodka & tonic',
-            'strInstructions': 'Pour ingredients into an ice-filled glass. Garnish with a lime wedge and serve.',
-            'strIngredient1': 'vodka',
-            'strIngredientAmount1': '50ml',
-            'strIngredient2': 'tonic water',
-            'strIngredientAmount2': '120ml',
-            'strIngredientAmount3': '30ml'
+            'strName': 'artlantic',
+            'strInstructions': 'Shake all ingredients with ice, strain into an ice-filled glass and garnish with an orange wedge.',
+            'strIngredient1': 'spiced rum',
+            'strIngredientAmount1': '30ml',
+            'strIngredient2': 'amaretto',
+            'strIngredientAmount2': '15ml',
+            'strIngredient3': 'blue curaçao',
+            'strIngredientAmount3': '',
+            'strIngredient4': 'lime juice',
+            'strIngredientAmount4': '15ml',
+            'strIngredient5': 'apple juice',
+            'strIngredientAmount5': '90ml'
         };
         return request(app)
         .post('/submit')
@@ -136,13 +226,18 @@ describe('Test the things service', () => {
 
     test('POST /submit with incomplete ingredient-amount pairs returns correct error message', () => {
         const params = {
-            'strName': 'vodka & tonic',
-            'strInstructions': 'Pour ingredients into an ice-filled glass. Garnish with a lime wedge and serve.',
-            'strIngredient1': 'vodka',
-            'strIngredientAmount1': '50ml',
-            'strIngredient2': 'tonic water',
-            'strIngredientAmount2': '120ml',
-            'strIngredientAmount3': '30ml'
+            'strName': 'artlantic',
+            'strInstructions': 'Shake all ingredients with ice, strain into an ice-filled glass and garnish with an orange wedge.',
+            'strIngredient1': 'spiced rum',
+            'strIngredientAmount1': '30ml',
+            'strIngredient2': 'amaretto',
+            'strIngredientAmount2': '15ml',
+            'strIngredient3': 'blue curaçao',
+            'strIngredientAmount3': '',
+            'strIngredient4': 'lime juice',
+            'strIngredientAmount4': '15ml',
+            'strIngredient5': 'apple juice',
+            'strIngredientAmount5': '90ml'
         };
         return request(app)
         .post('/submit')
@@ -152,12 +247,18 @@ describe('Test the things service', () => {
 
     test('POST /submit succeeds with valid inputs', () => {
         const params = {
-            'strName': 'vodka & tonic',
-            'strInstructions': 'Pour ingredients into an ice-filled glass. Garnish with a lime wedge and serve.',
-            'strIngredient1': 'vodka',
-            'strIngredientAmount1': '50ml',
-            'strIngredient2': 'tonic water',
-            'strIngredientAmount2': '120ml'
+            'strName': 'artlantic',
+            'strInstructions': 'Shake all ingredients with ice, strain into an ice-filled glass and garnish with an orange wedge.',
+            'strIngredient1': 'spiced rum',
+            'strIngredientAmount1': '30ml',
+            'strIngredient2': 'amaretto',
+            'strIngredientAmount2': '15ml',
+            'strIngredient3': 'blue curaçao',
+            'strIngredientAmount3': '15ml',
+            'strIngredient4': 'lime juice',
+            'strIngredientAmount4': '15ml',
+            'strIngredient5': 'apple juice',
+            'strIngredientAmount5': '90ml'
         };
         return request(app)
         .post('/submit')
@@ -167,17 +268,23 @@ describe('Test the things service', () => {
 
     test('POST /submit fails with repeated inputs', () => {
         const params = {
-            'strName': 'vodka & tonic',
-            'strInstructions': 'Pour ingredients into an ice-filled glass. Garnish with a lime wedge and serve.',
-            'strIngredient1': 'vodka',
-            'strIngredientAmount1': '50ml',
-            'strIngredient2': 'tonic water',
-            'strIngredientAmount2': '120ml'
+            'strName': 'artlantic',
+            'strInstructions': 'Shake all ingredients with ice, strain into an ice-filled glass and garnish with an orange wedge.',
+            'strIngredient1': 'spiced rum',
+            'strIngredientAmount1': '30ml',
+            'strIngredient2': 'amaretto',
+            'strIngredientAmount2': '15ml',
+            'strIngredient3': 'blue curaçao',
+            'strIngredientAmount3': '15ml',
+            'strIngredient4': 'lime juice',
+            'strIngredientAmount4': '15ml',
+            'strIngredient5': 'apple juice',
+            'strIngredientAmount5': '90ml'
         };
         return request(app)
         .post('/submit')
         .send(params)
-	    .expect('{"error":"Name VODKA & TONIC is not unique"}');
+	    .expect('{"error":"Name ARTLANTIC is not unique"}');
     });
 
     test('GET /ingredients returns JSON', () => {
