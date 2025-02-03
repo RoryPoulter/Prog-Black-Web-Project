@@ -147,14 +147,31 @@ submitForm.addEventListener("submit", async function(event){
                 body: formData
             }
         );
-        if (response.ok){
-            const responseBody = await response.text();
-            console.log(responseBody);
-        } else {
-            let t = await response.text();
-            console.log(t);
-        }
+        const responseBody = await response.text();
+        console.log(responseBody);
     } catch(e) {
         alert(e);
+    }
+})
+
+const deleteForm = document.getElementById("deleteForm");
+const nameInput = document.getElementById("deleteName");
+deleteForm.addEventListener("submit", async function(event){
+    event.preventDefault();
+    let recipeName = nameInput.value;
+    if (recipeName == ""){
+        alert("Missing cocktail name");
+        return;
+    }
+    const response = await fetch(`/delete/${recipeName}`,
+        {
+            method: "DELETE",
+        }
+    );
+    const responseBody = await response.json();
+    if (response.ok){
+        alert(responseBody.message);
+    } else {
+        alert(responseBody.error);
     }
 })

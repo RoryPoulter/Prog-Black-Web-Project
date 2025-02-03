@@ -19,7 +19,7 @@
             <h3>Submit Cocktail</h3>
             <h6>Share your own recipes</h6>
             <!-- POST form for submitting recipes -->
-            <form action="http://127.0.0.1:5000/submit" method="POST" id="submit" enctype="multipart/form-data">
+            <form action="http://127.0.0.1:8080/submit" method="POST" id="submit" enctype="multipart/form-data">
                 <div class="container">
                     <div class="row">
                         <div class="col-md-6">
@@ -54,7 +54,7 @@
             <h3>Cocktail Search</h3>
             <h6>Find the next cocktail you'll love</h6>
             <!-- GET form for searching recipes -->
-            <form action="http://127.0.0.1:5000/search" id="search">
+            <form action="http://127.0.0.1:8080/search" id="search">
                 <label for="ingredients">Ingredient:</label>
                 <select name="ingredients" id="ingredients">
                     <option value="all">-------</option>
@@ -71,9 +71,16 @@
             <div class="container">
                 <div id="searchResult" class="row search-results"></div>
             </div>
+            <h4>Delete Recipe</h4>
+            <h6>Delete a recipe to improve it</h6>
+            <form action="http://127.0.0.1:8080/delete/" method="POST" id="deleteForm">
+                <label for="deleteName">Name:</label>
+                <input type="text" id="deleteName" name="deleteName">
+                <input type="submit">
+            </form>
         </div>
         <hr>
-        <a href="doc.html">API Documentation</a>
+        <a href="http://127.0.0.1:8080/docs">API Documentation</a>
         <script src="index.js" async defer></script>
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
