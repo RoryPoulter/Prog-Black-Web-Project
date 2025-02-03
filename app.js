@@ -6,7 +6,6 @@ const express = require("express");
 const multer = require("multer");
 const app = express();
 
-const fileTypes = [".jpeg", ".jpg", ".png"];
 const maxSize = 2 * 1024 * 1024;
 global.__basedir = __dirname;
 var corsOptions = {origin: "http://localhost:8081"};
@@ -46,6 +45,11 @@ let uploadFilePromise = multer({
 app.get("/", function(req, resp){
     resp.status(200).sendFile(__basedir + "/client/index.html");
 });
+
+
+app.get("/docs", function(req, resp){
+    resp.status(200).sendFile(__basedir + "/client/doc.html")
+})
 
 
 // Adds the data to the JSON
@@ -101,19 +105,19 @@ app.post("/submit", uploadFilePromise, function(req, resp){
     */
     if (Object.keys(newDrinkData).length != 34){
         console.log(`Extra params passed (${Object.keys(newDrinkData).length})`);
-        resp.status(422).send({error: `Extra params passed (${Object.keys(newDrinkData).length})`});
+        resp.status(400).send({error: `Extra params passed (${Object.keys(newDrinkData).length})`});
         return;
     }
     if (!newDrinkData.strName || !newDrinkData.strInstructions || !newDrinkData.strIngredient1 || !newDrinkData.strIngredientAmount1 || !newDrinkData.strIngredient2 || !newDrinkData.strIngredientAmount2){
         console.log("Missing required inputs");
-        resp.status(422).send({error: "Missing required inputs"});
+        resp.status(400).send({error: "Missing required inputs"});
         return;
     }
     newDrinkData.strName = newDrinkData.strName.toUpperCase();
     for (let drink of jsonContent.drinks){
         if (drink.strName == newDrinkData.strName){
             console.log(`Name '${newDrinkData.strName}' is not unique`);
-            resp.status(422).send({error: `Name ${newDrinkData.strName} is not unique`});
+            resp.status(400).send({error: `Name ${newDrinkData.strName} is not unique`});
             return;
         }
     }
@@ -121,7 +125,7 @@ app.post("/submit", uploadFilePromise, function(req, resp){
         //? (!a != !b) == (a XOR b) from user `John Kugelman` on https://stackoverflow.com/questions/4540422/why-is-there-no-logical-xor
         if (!newDrinkData["strIngredient"+i] != !newDrinkData["strIngredientAmount"+i]){
             console.log(`Ingredient-amount pair no. ${i} incomplete`);
-            resp.status(422).send({error: `Ingredient-amount pair no. ${i} incomplete`});
+            resp.status(400).send({error: `Ingredient-amount pair no. ${i} incomplete`});
             return;
         }
     }
@@ -208,15 +212,15 @@ app.get("/search", function(req, resp){
      * 3. Check `maxAmountIngredients` is in range 2 - 15 inclusive
      */
     if (minAmountIngredients > maxAmountIngredients){
-        resp.status(422).send({error: `Query param minIngredients greater than maxIngredients (${minAmountIngredients} > ${maxAmountIngredients})`});
+        resp.status(400).send({error: `Query param minIngredients greater than maxIngredients (${minAmountIngredients} > ${maxAmountIngredients})`});
         return
     }
     if (minAmountIngredients < 2){
-        resp.status(422).send({error: `Query param minIngredients out of range (${minAmountIngredients})`});
+        resp.status(400).send({error: `Query param minIngredients out of range (${minAmountIngredients})`});
         return
     }
     if (maxAmountIngredients > 15){
-        resp.status(422).send({error: `Query param maxIngredients out of range (${maxAmountIngredients})`});
+        resp.status(400).send({error: `Query param maxIngredients out of range (${maxAmountIngredients})`});
         return
     }
     // Returns all drinks in data.json

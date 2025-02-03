@@ -33,7 +33,7 @@ describe('Test the things service', () => {
     test('GET /search?minIngredients=8&maxIngredients=6 fails', () =>{
         return request(app)
         .get('/search?minIngredients=8&maxIngredients=6')
-        .expect(422);
+        .expect(400);
     });
 
     test('GET /search?minIngredients=8&maxIngredients=6 returns JSON', () =>{
@@ -52,7 +52,7 @@ describe('Test the things service', () => {
     test('GET /search?minIngredients=16 fails', () =>{
         return request(app)
         .get('/search?minIngredients=16')
-        .expect(422);
+        .expect(400);
     });
 
     test('GET /search?minIngredients=16 returns JSON', () =>{
@@ -165,7 +165,7 @@ describe('Test the things service', () => {
         return request(app)
         .post('/submit')
         .send(params)
-	    .expect(422);
+	    .expect(400);
     });
 
     test('POST /submit with empty inputs returns correct error message', () => {
@@ -190,7 +190,7 @@ describe('Test the things service', () => {
         return request(app)
         .post('/submit')
         .send(params)
-	    .expect(422);
+	    .expect(400);
     });
 
     test('POST /submit with extra inputs returns correct error message', () => {
@@ -221,7 +221,7 @@ describe('Test the things service', () => {
         return request(app)
         .post('/submit')
         .send(params)
-	    .expect(422);
+	    .expect(400);
     });
 
     test('POST /submit with incomplete ingredient-amount pairs returns correct error message', () => {
