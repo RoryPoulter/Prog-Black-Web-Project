@@ -36,7 +36,7 @@ Recipes can have up to 15 ingredients and each must be listed with an amount. Th
 
 An image can be uploaded but is not required; if no image is uploaded, the image below is displayed with the drink instead:
 
-![placeholder image]("https://placehold.co/200x200?text=No+Image")
+![placeholder image](https://placehold.co/200x200?text=No+Image)
 
 When all inputs have been entered, press the `Share` button.
 
