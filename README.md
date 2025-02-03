@@ -1,19 +1,73 @@
 # Cocktail Search Engine
+### Contents
+- [Usage](#usage)
+  - [Installation](#installation)
+  - [Using the web app](#using-the-web-app)
+- [API Documentation](#api-documentation)
+  - [GET /](#get)
+  - [GET /ingredients](#get-ingredients-returns-json-with-array)
+  - [GET /search](#get-search-returns-json-with-recipes)
+  - [POST /submit](#post-submit)
+  - [DELETE /delete/:recipe](#delete-deleterecipe)
+# Usage
+## Installation
+Navigate to the directory in the terminal and run the command:
+```cmd 
+npm install
+```
+To test the program runs correctly, run the test cases using:
+```cmd
+npm test
+```
+If the program passes all the tests, run the server using:
+```cmd
+npm start
+```
+Open your browser and type `127.0.0.1:8080` in the URL bar.
 
+## Using the web app
+### Uploading Recipes
+To add a new recipe, the following inputs are required:
+* Drink name
+* Drink instructions
+* At least 2 ingredients with measurements
+
+Recipes can have up to 15 ingredients and each must be listed with an amount. The amount of ingredients can be changed by clicking the `+`/`-` buttons.
+
+An image can be uploaded but is not required; if no image is uploaded, the image below is displayed with the drink instead:
+
+![placeholder image]("https://placehold.co/200x200?text=No+Image")
+
+When all inputs have been entered, press the `Share` button.
+
+If the drink name is not unique, or there are missing required inputs, the recipe will not be posted.
+
+### Searching Recipes
+Recipes can be filtered based on if they contain a given ingredient and if the have at most a certain amount of ingredients. To show all recipes, the `ingredient` selection field should be left as `-------` (this does not filter by ingredients), move the slider to the right and click `Search`.
+
+The order of results can be toggled to be either oldest to newest or vice versa.
+
+If no recipes match the search criteria, the search results will not change.
+
+
+### Deleting Recipes
+Recipes can be deleted from the API. This can be done by entering the drink name into the form and clicking the `Submit` button. The input is not case sensitive.
+
+# API Documentation
 ## <font color="green">GET</font> /
 ```
-http://127.0.0.1:5000/
+http://127.0.0.1:8080/
 ```
 Returns the file `index.html`.
 
 ## <font color="green">GET</font> /ingredients returns JSON with array
 ```
-http://127.0.0.1:5000/ingredients
+http://127.0.0.1:8080/ingredients
 ```
 Returns JSON data with an array of all the ingredients in the drinks. Has no query parameters.
 #### Example Request
 ```cmd
-curl http://127.0.0.1:5000/ingredients
+curl http://127.0.0.1:8080/ingredients
 ```
 #### Response
 ```JSON
@@ -51,7 +105,7 @@ curl http://127.0.0.1:5000/ingredients
 
 ## <font color="green">GET</font> /search returns JSON with recipes
 ```
-http://127.0.0.1:5000/search
+http://127.0.0.1:8080/search
 ```
 Returns recipes in the API.
 #### Query Params
@@ -63,7 +117,7 @@ The maximum number of ingredients in each of the recipes returned by the API. Mu
 
 #### Example Request 1 - Valid search with results
 ```cmd
-curl "http://127.0.0.1:5000/search?ingredients=tonic%20water&maxIngredients=2"
+curl "http://127.0.0.1:8080/search?ingredients=tonic%20water&maxIngredients=2"
 ```
 #### Response
 ```JSON
@@ -147,7 +201,7 @@ curl "http://127.0.0.1:5000/search?ingredients=tonic%20water&maxIngredients=2"
 
 #### Example Request 2 - Valid search without results
 ```cmd
-curl "http://127.0.0.1:5000/search?ingredients=cola&maxIngredients=2"
+curl "http://127.0.0.1:8080/search?ingredients=cola&maxIngredients=2"
 ```
 #### Response
 ```JSON
@@ -155,9 +209,10 @@ curl "http://127.0.0.1:5000/search?ingredients=cola&maxIngredients=2"
     "drinks": null
 }
 ```
+
 #### Example Request 3 - Invalid search
 ```cmd
-curl "http://127.0.0.1:5000/search?ingredients=tonic%20water&maxIngredients=1"
+curl "http://127.0.0.1:8080/search?ingredients=tonic%20water&maxIngredients=1"
 ```
 #### Response
 ```
@@ -166,7 +221,7 @@ Unprocessable Entity
 
 ## <font color="orange">POST</font> /submit
 ```
-http://127.0.0.1:5000/submit
+http://127.0.0.1:8080/submit
 ```
 Adds a recipe to the API.
 #### Request Body
@@ -187,8 +242,47 @@ The name of the third to fifteenth ingredients.
 ##### `strIngredientAmount3` - `strIngredientAmount15` | string | Optional | Defaults to null
 The amount of the third to fifteenth ingredients.
 #### Returns
-HTTP code depending of if request is successful (200) or not (422).
+HTTP code depending of if request is successful (200) or not (400).
 
 ```
-Unprocessable Entity
+Bad Response
+```
+
+## <font color="red">DELETE</font> /delete/:recipe
+```
+http://127.0.0.1:8080/delete/
+```
+Deletes a recipe from the API.
+#### Query Params
+##### `recipe` | string | Required
+The name of the recipe to be deleted from the API. Not case sensitive.
+#### Example Request 1 - Request with drink that does exist
+```cmd
+curl "http://127.0.0.1:8080/delete/artlantic"
+```
+#### Response
+```JSON
+{
+  "message": "Recipe successfully deleted"
+}
+```
+#### Example Request 2 - Request with drink that does not exist
+```cmd
+curl "http://127.0.0.1:8080/delete/artlantic"
+```
+#### Response
+```JSON
+{
+  "error": "Recipe ATLANTIC not found"
+}
+```
+#### Example Request 3 - Request with no drink
+```cmd
+curl "http://127.0.0.1:8080/delete/"
+```
+#### Response
+```JSON
+{
+  "error": "Missing required input"
+}
 ```
