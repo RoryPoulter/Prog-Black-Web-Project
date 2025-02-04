@@ -99,46 +99,70 @@
             <code>{"error": "Query param minIngredients greater than maxIngredients (7 > 6)"}</code>
             <hr>
 
-            <!-- DELETE /delete/:recipe -->
-            <h2>DELETE /delete/:recipe</h2>
-            <p>Deletes a recipe of a given name from the API.</p>
-            <h3>Query Params</h3>
-            <h6><code>recipe</code> | string | Required</h6>
-            <p>The name of the recipe in the API. Not case-sensitive as converted to upper case on the server side.</p>
-
-            <h4>Example Request</h4>
-            <code>curl -X DELETE "http://127.0.0.1:8080/delete/artlantic" -H "Accept: application/json"</code>
-            <h4>Response</h4>
-            <code>{"message":"Recipe successfully deleted"}</code>
-            <hr>
-
             <!-- POST /submit -->
             <h2>POST /submit</h2>
             <p>Adds a recipe to the API.</p>
             <h3>Request Body</h3>
             <h6><code>strName</code> | string | Required</h6>
-            <p>The name of the recipe in the cocktail.</p>
+            <p>The name of the cocktail.</p>
             <h6><code>strInstructions</code> | string | Required</h6>
             <p>The instructions for making the cocktail.</p>
             <h6><code>strIngredient1</code> | string | Required</h6>
-            <p>The name of the first ingredient in the cocktail.</p>
+            <p>The name of the first ingredient.</p>
             <h6><code>strIngredientAmount1</code> | string | Required</h6>
-            <p>The amount of the first ingredient in the cocktail.</p>
+            <p>The amount of the first ingredient.</p>
             <h6><code>strIngredient2</code> | string | Required</h6>
-            <p>The name of the second ingredient in the cocktail.</p>
+            <p>The name of the second ingredient.</p>
             <h6><code>strIngredientAmount2</code> | string | Required</h6>
-            <p>The amount of the second ingredient in the cocktail.</p>
+            <p>The amount of the second ingredient.</p>
             <h6><code>strIngredient3 - strIngredient15</code> | string | Optional</h6>
-            <p>The names of the third to fifteenth ingredients in the cocktail.</p>
+            <p>The names of the third to fifteenth ingredients.</p>
             <h6><code>strIngredientAmount3 - strIngredientAmount15</code> | string | Optional</h6>
-            <p>The amounts of the third to fifteenth ingredients in the cocktail.</p>
+            <p>The amounts of the third to fifteenth ingredients.</p>
             <h6><code>fileDrinkImage</code> | file | Optional</h6>
             <p>An image of the cocktail. If none is uploaded, a placeholder image is used.</p>
 
-            <h4>Example Request</h4>
+            <h4>Example Request 1 - Post with valid inputs</h4>
             <code>curl http://127.0.0.1:8080/submit -H "Content-Type: application/json" -d "{\"strName\": \"screwdriver\",\"strInstructions\": \"Put ingredients in an ice-filled glass and stir with a screwdriver. Garnish with an orange slice.\",\"strIngredient1\": \"vodka\",\"strIngredientAmount1\": \"60ml\",\"strIngredient2\": \"orange juice\",\"strIngredientAmount2\": \"90ml\"}"</code>
-            <h4>Response</h4>
+            <h4>Response 1 - Drink is new</h4>
             <code>{"message":"Recipe uploaded successfully"}</code>
+            <h4>Response 2 - Drink is not new</h4>
+            <code>{"error":"Name SCREWDRIVER is not unique"}</code>
+
+            <h4>Example Request 2 - Post with extra parameters</h4>
+            <code>curl http://127.0.0.1:8080/submit -H "Content-Type: application/json" -d "{\"extraParam\": \"extraInput\"}"</code>
+            <h4>Response</h4>
+            <code>{"error":"Extra params passed (35)"}</code>
+
+            <h4>Example Request 3 - Post with missing required inputs</h4>
+            <code>curl http://127.0.0.1:8080/submit -H "Content-Type: application/json" -d "{\"strName\": \"screwdriver\",\"strIngredient1\": \"vodka\",\"strIngredientAmount1\": \"60ml\",\"strIngredient2\": \"orange juice\",\"strIngredientAmount2\": \"90ml\"}"</code>
+            <h4>Response</h4>
+            <code>{"error":"Missing required inputs"}</code>
+
+            <h4>Example Request 4 - Incomplete ingredient-amount pairs</h4>
+            <code>curl http://127.0.0.1:8080/submit -H "Content-Type: application/json" -d "{\"strName\": \"screwdriver\",\"strInstructions\": \"Put ingredients in an ice-filled glass and stir with a screwdriver. Garnish with an orange slice.\",\"strIngredient1\": \"vodka\",\"strIngredientAmount1\": \"60ml\",\"strIngredient2\": \"orange juice\",\"strIngredientAmount2\": \"90ml\",\"strIngredient3\": \"triple sec\"}"</code>
+            <h4>Response</h4>
+            <code>{"error":"Ingredient-amount pair no. 3 incomplete"}</code>
+            <hr>
+
+            <!-- DELETE /delete/:recipe -->
+            <h2>DELETE /delete/:recipe</h2>
+            <p>Deletes a recipe from the API.</p>
+            <h3>Query Params</h3>
+            <h6><code>recipe</code> | string | Required</h6>
+            <p>The name of the recipe in the API. Not case sensitive.</p>
+
+            <h4>Example Request 1 - Request with drink</h4>
+            <code>curl -X DELETE "http://127.0.0.1:8080/delete/artlantic" -H "Accept: application/json"</code>
+            <h4>Response 1 - Drink exists</h4>
+            <code>{"message":"Recipe successfully deleted"}</code>
+            <h4>Response 2 - Drink does not exist</h4>
+            <code>{"error":"Recipe ARTLANTIC not found"}</code>
+            <h4>Example Request 2 - Request with no drink</h4>
+            <code>curl -X DELETE "http://127.0.0.1:8080/delete/" -H "Accept: application/json"</code>
+            <h4>Response</h4>
+            <code>{"error":"Missing required input"}</code>
+            <hr>
         </div>
         <a href="http://127.0.0.1:8080/">Back</a>
         <!-- Bootstrap JS -->

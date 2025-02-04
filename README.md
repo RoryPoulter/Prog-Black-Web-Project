@@ -60,7 +60,7 @@ http://127.0.0.1:8080/
 ```
 Returns the file `index.html`.
 
-## <font color="green">GET</font> /ingredients returns JSON with array
+## <font color="green">GET</font> /ingredients
 ```
 http://127.0.0.1:8080/ingredients
 ```
@@ -103,7 +103,7 @@ curl http://127.0.0.1:8080/ingredients
 }
 ```
 
-## <font color="green">GET</font> /search returns JSON with recipes
+## <font color="green">GET</font> /search
 ```
 http://127.0.0.1:8080/search
 ```
@@ -226,9 +226,9 @@ http://127.0.0.1:8080/submit
 Adds a recipe to the API.
 #### Request Body
 ##### `strName` | string | Required
-The name of the drink.
+The name of the cocktail.
 ##### `strInstructions` | string | Required
-The instructions for making the drink.
+The instructions for making the cocktail.
 ##### `strIngredient1` | string | Required
 The name of the first ingredient.
 ##### `strIngredientAmount1` | string | Required
@@ -241,6 +241,8 @@ The amount of the second ingredient.
 The name of the third to fifteenth ingredients.
 ##### `strIngredientAmount3` - `strIngredientAmount15` | string | Optional | Defaults to null
 The amount of the third to fifteenth ingredients.
+##### `fileDrinkImg` | file | Optional | Defaults to placeholder image
+An image of the cocktail. If none is uploaded, a placeholder image is used.
 #### Returns
 HTTP code depending of if request is successful (200) or not (400).
 
@@ -302,27 +304,23 @@ Deletes a recipe from the API.
 #### Query Params
 ##### `recipe` | string | Required
 The name of the recipe to be deleted from the API. Not case sensitive.
-#### Example Request 1 - Request with drink that does exist
+#### Example Request 1 - Request with drink
 ```cmd
 curl "http://127.0.0.1:8080/delete/artlantic"
 ```
-#### Response
+#### Response 1 - Drink exists
 ```JSON
 {
   "message": "Recipe successfully deleted"
 }
 ```
-#### Example Request 2 - Request with drink that does not exist
-```cmd
-curl "http://127.0.0.1:8080/delete/artlantic"
-```
-#### Response
+#### Response 2 - Drink does not exist
 ```JSON
 {
   "error": "Recipe ATLANTIC not found"
 }
 ```
-#### Example Request 3 - Request with no drink
+#### Example Request 2 - Request with no drink
 ```cmd
 curl "http://127.0.0.1:8080/delete/"
 ```
