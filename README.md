@@ -244,8 +244,54 @@ The amount of the third to fifteenth ingredients.
 #### Returns
 HTTP code depending of if request is successful (200) or not (400).
 
+#### Example Request 1 - Post with valid inputs
+```cmd
+curl http://127.0.0.1:8080/submit -H "Content-Type: application/json" -d "{\"strName\": \"screwdriver\",\"strInstructions\": \"Put ingredients in an ice-filled glass and stir with a screwdriver. Garnish with an orange slice.\",\"strIngredient1\": \"vodka\",\"strIngredientAmount1\": \"60ml\",\"strIngredient2\": \"orange juice\",\"strIngredientAmount2\": \"90ml\"}"
 ```
-Bad Response
+#### Response 1 - Drink is new
+```JSON
+{
+  "message": "Recipe successfully uploaded"
+}
+```
+#### Response 2 - Drink is not new
+```JSON
+{
+  "error": "Name SCREWDRIVER is not unique"
+}
+```
+
+#### Example Request 2 - Post with extra parameters
+```cmd
+curl http://127.0.0.1:8080/submit -H "Content-Type: application/json" -d "{\"extraParam\": \"extraInput\"}"
+```
+#### Response
+```JSON
+{
+  "error": "Extra params passed (35)"
+}
+```
+
+#### Example Request 3 - Post with missing required inputs
+```cmd
+curl http://127.0.0.1:8080/submit -H "Content-Type: application/json" -d "{\"strName\": \"screwdriver\",\"strIngredient1\": \"vodka\",\"strIngredientAmount1\": \"60ml\",\"strIngredient2\": \"orange juice\",\"strIngredientAmount2\": \"90ml\"}"
+```
+#### Response
+```JSON
+{
+  "error": "Missing required inputs"
+}
+```
+
+#### Example Request 4 - Incomplete ingredient-amount pairs
+```cmd
+curl http://127.0.0.1:8080/submit -H "Content-Type: application/json" -d "{\"strName\": \"screwdriver\",\"strInstructions\": \"Put ingredients in an ice-filled glass and stir with a screwdriver. Garnish with an orange slice.\",\"strIngredient1\": \"vodka\",\"strIngredientAmount1\": \"60ml\",\"strIngredient2\": \"orange juice\",\"strIngredientAmount2\": \"90ml\",\"strIngredient3\": \"triple sec\"}"
+```
+#### Response
+```JSON
+{
+  "error": "Ingredient-amount pair no. 3 incomplete"
+}
 ```
 
 ## <font color="red">DELETE</font> /delete/:recipe
