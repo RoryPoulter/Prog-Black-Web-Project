@@ -225,15 +225,11 @@ app.get("/search", function(req, resp){
     }
     // Stores the JSON data to be returned
     let data = {drinks: []};
-    if (searchIngredient == "all" && maxAmountIngredients == 15){
-        data.drinks = jsonContent.drinks;
-    } else {
-        for (let drink of jsonContent.drinks){
-            if (filterSearch(drink, searchIngredient, minAmountIngredients, maxAmountIngredients)){
-                data.drinks.push(drink)
-            }
-        };
-    }
+    for (let drink of jsonContent.drinks){
+        if (filterSearch(drink, searchIngredient, minAmountIngredients, maxAmountIngredients)){
+            data.drinks.push(drink)
+        }
+    };
     if (!isOldestFirst){
         data.drinks.reverse();
     }
