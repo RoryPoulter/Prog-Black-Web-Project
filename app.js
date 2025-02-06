@@ -223,26 +223,19 @@ app.get("/search", function(req, resp){
         resp.status(400).send({error: `Query param maxIngredients out of range (${maxAmountIngredients})`});
         return
     }
-    // Returns all drinks in data.json
-    if (searchIngredient == "all" && maxAmountIngredients == 15){
-        resp.status(200).send({drinks: jsonContent.drinks});
-        return
-    };
     // Stores the JSON data to be returned
     let data = {drinks: []};
-
-    if (isOldestFirst){
+    if (searchIngredient == "all" && maxAmountIngredients == 15){
+        data.drinks = jsonContent.drinks;
+    } else {
         for (let drink of jsonContent.drinks){
             if (filterSearch(drink, searchIngredient, minAmountIngredients, maxAmountIngredients)){
                 data.drinks.push(drink)
             }
         };
-    } else {
-        for (let i = jsonContent.drinks.length - 1; i >= 0; i--){
-            if (filterSearch(jsonContent.drinks[i], searchIngredient, minAmountIngredients, maxAmountIngredients)){
-                data.drinks.push(jsonContent.drinks[i]);
-            }
-        }
+    }
+    if (!isOldestFirst){
+        data.drinks.reverse();
     }
 
     // If no drinks matched criteria
