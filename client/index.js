@@ -139,17 +139,18 @@ submitForm.addEventListener("submit", async function(event){
         if (fileInput.files.length > 0) {
             formData.append('fileDrinkImage', fileInput.files[0]);
         }
-        for (let entry of formData.entries()){
-            console.log(entry[0] + " : " + entry[1])
-        }
         const response = await fetch("/submit",
             {
                 method: "POST",
                 body: formData
             }
         );
-        const responseBody = await response.text();
-        console.log(responseBody);
+        const responseBody = await response.json();
+        if (response.ok){
+            alert("Recipe successfully submitted");
+        } else {
+            alert(responseBody.error);
+        }
     } catch(e) {
         alert(e);
     }
