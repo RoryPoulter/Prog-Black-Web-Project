@@ -202,8 +202,8 @@ function filterSearch(drinkData, ingredient, minAmount, maxAmount){
 app.get("/search", function(req, resp){
     // Input validation
     let searchIngredient = (req.query.ingredients || "all").toLowerCase();
-    let minAmountIngredients = req.query.minIngredients || 2;
-    let maxAmountIngredients = req.query.maxIngredients || 15;
+    let minAmountIngredients = Number(req.query.minIngredients) || 2;
+    let maxAmountIngredients = Number(req.query.maxIngredients) || 15;
     let isOldestFirst = (req.query.order || "oldest") == "oldest";
 
     /** Input Validation:

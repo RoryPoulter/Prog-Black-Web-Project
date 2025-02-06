@@ -112,8 +112,12 @@ searchForm.addEventListener("submit", async function(event){
     event.preventDefault();
     const formData = new FormData(searchForm);
     const formJson = Object.fromEntries(formData.entries());
-    const response = await fetch(`/search?ingredients=${formJson.ingredients}&maxIngredients=${formJson.maxIngredients}&order=${formJson.order}`);
+    const response = await fetch(`/search?ingredients=${formJson.ingredients}&maxIngredients=${formJson.maxIngredients}&minIngredients=${formJson.minIngredients}&order=${formJson.order}`);
     let jsonContent = await response.json();
+    if (!response.ok){
+        alert(jsonContent.error);
+        return
+    }
     if (jsonContent.drinks == null){
         alert("No recipes found with search parameters");
         return
