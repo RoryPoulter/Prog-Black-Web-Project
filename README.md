@@ -1,4 +1,8 @@
 # Cocktail Search Engine
+![GitHub Release](https://img.shields.io/github/v/release/RoryPoulter/Prog-Black-Web-Project)
+![GitHub License](https://img.shields.io/github/license/RoryPoulter/Prog-Black-Web-Project)
+[![GitHub last commit](https://img.shields.io/github/last-commit/RoryPoulter/Prog-Black-Web-Project.svg?style=flat)]()
+
 ### Contents
 - [Usage](#usage)
   - [Installation](#installation)
