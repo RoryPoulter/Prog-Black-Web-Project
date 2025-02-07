@@ -53,16 +53,19 @@
             <hr>
             <h3>Cocktail Search</h3>
             <h6>Find the next cocktail you'll love</h6>
+
             <!-- GET form for searching recipes -->
             <form action="http://127.0.0.1:8080/search" id="search">
                 <label for="ingredients">Ingredient:</label>
                 <select name="ingredients" id="ingredients">
                     <option value="all">-------</option>
-                </select>
+                </select><br>
                 <label for="minIngredients">Min ingredients:</label>
-                <input type="range" min="2" max="15" name="minIngredients" id="minIngredients">
+                <input type="range" min="2" max="15" name="minIngredients" id="minIngredients" value="2">
+                <output id="minIngredientsValue">2</output><br>
                 <label for="maxIngredients">Max ingredients:</label>
-                <input type="range" min="2" max="15" name="maxIngredients" id="maxIngredients">
+                <input type="range" min="2" max="15" name="maxIngredients" id="maxIngredients" value="15">
+                <output id="maxIngredientsValue">15</output><br>
                 <label for="order">Sort By:</label>
                 <select name="order" id="order">
                     <option value="oldest">Oldest to Newest</option>
@@ -73,6 +76,8 @@
             <div class="container">
                 <div id="searchResult" class="row search-results"></div>
             </div>
+
+            <!-- DELETE form -->
             <h4>Delete Recipe</h4>
             <h6>Delete a recipe to improve it</h6>
             <form action="http://127.0.0.1:8080/delete/" method="POST" id="deleteForm">

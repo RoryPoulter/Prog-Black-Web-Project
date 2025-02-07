@@ -52,7 +52,6 @@ subIngredientButton.addEventListener("click", function(event){
  * Gets the JSON data and adds the ingredients to the select element
  */
 async function getJsonData(event) {
-    console.log(event);
     let response = await fetch("./data/data.json");
     let jsonContent = await response.json();
     let searchSelect = document.getElementById("ingredients");
@@ -180,4 +179,16 @@ deleteForm.addEventListener("submit", async function(event){
     } else {
         alert(responseBody.error);
     }
+})
+
+const minAmountSlider = document.getElementById("minIngredients");
+minAmountSlider.addEventListener("input", function(event){
+    const minAmountLabel = document.getElementById("minIngredientsValue");
+    minAmountLabel.innerHTML = minAmountSlider.value;
+})
+
+const maxAmountSlider = document.getElementById("maxIngredients");
+maxAmountSlider.addEventListener("input", function(event){
+    const maxAmountLabel = document.getElementById("maxIngredientsValue");
+    maxAmountLabel.innerHTML = maxAmountSlider.value;
 })
