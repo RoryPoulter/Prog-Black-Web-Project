@@ -51,7 +51,7 @@ subIngredientButton.addEventListener("click", function(event){
 /**
  * Gets the JSON data and adds the ingredients to the select element
  */
-async function getJsonData(event) {
+async function getJsonData() {
     let response = await fetch("./data/data.json");
     let jsonContent = await response.json();
     let searchSelect = document.getElementById("ingredients");
@@ -63,11 +63,11 @@ async function getJsonData(event) {
         searchSelect.appendChild(ingredientOption);
     }
 }
-document.addEventListener("DOMContentLoaded", getJsonData(event));
+document.addEventListener("DOMContentLoaded", getJsonData());
 
 /**
  * Creates a div element with information about a given drink
- * @param {object} drinkData The drink data from `data.json`
+ * @param {Object} drinkData The drink data from `data.json`
  * @returns {HTMLDivElement} The formatted div for the drink
  */
 function createDrinkDiv(drinkData){

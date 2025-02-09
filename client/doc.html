@@ -41,7 +41,14 @@
             <h6><code>minIngredients</code> | integer | Optional | Defaults to 2</h6>
             <p>The minimum number of ingredients in each of the recipes returned by the API. Must be within the range 2 to 15 inclusive and must be less than or equal to maxIngredients. By default has value 2 which does not filter by minimum number of ingredients. If minIngredients is out of range, the HTTP code 400 is returned with an error message explaining the problem.</p>
             <h6><code>order</code> | string | Optional | Defaults to 'oldest'</h6>
-            <p>The order in which the results are displayed. Defaults to 'oldest' unless parameter equals 'newest'.</p>
+            <p>The order in which the results are displayed. By default has the value <code>'oldest'</code>. The values sort the results in the following ways:
+              <ul>
+                <li><code>'oldest'</code> - sort recipes in order they were added to the API</li>
+                <li><code>'newest'</code> - sort recipes in order they were added to the API; newest first</li>
+                <li><code>'least'</code> - sort recipes in ascending order by number of ingredients in the recipe</li>
+                <li><code>'most'</code> - sort recipes in descending order by number of ingredients in the recipe</li>
+              </ul>
+            </p>
 
             <h4>Example Request 1 - Valid search with results</h4>
             <code>curl "http://127.0.0.1:8080/search?ingredients=amaretto"</code>

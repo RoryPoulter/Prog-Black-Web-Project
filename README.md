@@ -117,7 +117,17 @@ Returns recipes in the API.
 The ingredient which is included in all the recipes returned by the API. By default has value `'all'` which does not filter by ingredients.
 
 ##### `maxIngredients` | integer | Optional | Defaults to 15
-The maximum number of ingredients in each of the recipes returned by the API. Must be within the range 2 to 15 inclusive. By default has value 15 which does not filter by number of ingredients. If `maxIngredients` is out of range, the HTTP code 422 is returned instead of JSON data.
+The maximum number of ingredients in each of the recipes returned by the API. Must be within the range 2 to 15 inclusive and be greater than or equal to `minIngredients`. By default has value 15 which does not filter by maximum number of ingredients. Returns 400 with an error if out of range.
+
+##### `minIngredients` | integer | Optional | Defaults to 2
+The minimum number of ingredients in each of the recipes returned by the API. Must be within the range 2 to 15 inclusive and be less than or equal to `maxIngredients`. By default has value 2 which does not filter by minimum number of ingredients. Returns 400 with an error if out of range.
+
+##### `searchOrder` | string | Optional | Defaults to 'oldest'
+The order in which the results are sorted. By default has a value of `'oldest'`. The values sort the results in the following ways:
+* `'oldest'` - sort recipes in order they were added to the API
+* `'newest'` - sort recipes in order the were added to the API; newest first
+* `'least'` - sort recipes in ascending order by number of ingredients in the recipe
+* `'most'` - sort recipes in descending order by number of ingredients in the recipe
 
 #### Example Request 1 - Valid search with results
 ```cmd
@@ -219,8 +229,10 @@ curl "http://127.0.0.1:8080/search?ingredients=cola&maxIngredients=2"
 curl "http://127.0.0.1:8080/search?ingredients=tonic%20water&maxIngredients=1"
 ```
 #### Response
-```
-Unprocessable Entity
+```JSON
+{
+  "error": "Query param minIngredients out of range (1)"
+}
 ```
 
 ## <font color="orange">POST</font> /submit
