@@ -18,13 +18,14 @@ if (!fs.existsSync("./client/data/data.json")){
 // Loads content from `data.json`
 const jsonContent = require("./client/data/data.json");
 
-
+// Middleware
 app.use(cors(corsOptions));
 app.use(express.static("client"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false })); //Parse URL-encoded bodies
 
 
+// File handling
 let storage = multer.diskStorage({
 	destination: (req, file, cb) => {
 		cb(null, __basedir + "/client/uploads/");
@@ -41,19 +42,110 @@ let uploadFilePromise = multer({
 }).single("fileDrinkImage");
 
 
-// Sends the HTML body to the client when visiting the url
+/**
+ * Checks if a drink meets the search requirements
+ * @param {object} drinkData The JSON data about the drink
+ * @param {string} ingredient The ingredient which should be in the drink
+ * @param {number} minAmount The minimum amount of ingredients allowed
+ * @param {number} maxAmount The maximum amount of ingredients allowed
+ * @returns {boolean} If the drink meets the search requirements
+ */
+function filterSearch(drinkData, ingredient, minAmount, maxAmount){
+    if (drinkData.numberIngredients > maxAmount || drinkData.numberIngredients < minAmount){
+        return false;
+    }
+    if (ingredient == "all"){
+        return true;
+    }
+    for (let i = 1; i <= drinkData.numberIngredients; i++){
+        if (drinkData["strIngredient"+i] == ingredient){
+            return true;
+        }
+    }
+    return false;
+}
+
+
+// * Route Methods
+// Sends the HTML body for the home page
 app.get("/", function(req, resp){
     resp.status(200).sendFile(__basedir + "/client/index.html");
 });
 
 
+// Sends the HTML body for the documentation
 app.get("/docs", function(req, resp){
     resp.status(200).sendFile(__basedir + "/client/doc.html")
-})
+});
+
+
+// Sends drinks from the JSON which meet search criteria
+app.get("/search", function(req, resp){
+    // Get query params and set null params to default values
+    let searchIngredient = (req.query.ingredients || "all").toLowerCase();
+    let minAmountIngredients = Number(req.query.minIngredients) || 2;
+    let maxAmountIngredients = Number(req.query.maxIngredients) || 15;
+    let searchOrder = (req.query.order || "oldest").toLowerCase();
+
+    /** Input Validation:
+     * 1. Check `minAmountIngredients` is not greater than `maxAmountIngredients`
+     * 2. Check `minAmountIngredients` is in range 2 - 15 inclusive
+     * 3. Check `maxAmountIngredients` is in range 2 - 15 inclusive
+     * 4. Check `searchOrder` has valid value
+     */
+    if (minAmountIngredients > maxAmountIngredients){
+        resp.status(400).send({error: `Query param minIngredients greater than maxIngredients (${minAmountIngredients} > ${maxAmountIngredients})`});
+        return
+    }
+    if (minAmountIngredients < 2){
+        resp.status(400).send({error: `Query param minIngredients out of range (${minAmountIngredients})`});
+        return
+    }
+    if (maxAmountIngredients > 15){
+        resp.status(400).send({error: `Query param maxIngredients out of range (${maxAmountIngredients})`});
+        return
+    }
+    if (!["oldest", "newest", "least", "most"].includes(searchOrder)){
+        resp.status(400).send({error: `Query param searchOrder value not valid (${searchOrder})`});
+        return
+    }
+
+    // Stores the JSON data to be returned
+    let data = {drinks: []};
+
+    // Add the drinks which meet the criteria
+    for (let drink of jsonContent.drinks){
+        if (filterSearch(drink, searchIngredient, minAmountIngredients, maxAmountIngredients)){
+            data.drinks.push(drink)
+        }
+    };
+
+    // Order the search results
+    if (searchOrder == "newest"){
+        data.drinks.reverse();
+    } else if (searchOrder == "least"){
+        data.drinks.sort((a, b) => a.numberIngredients - b.numberIngredients);
+    } else if (searchOrder == "most"){
+        data.drinks.sort((a, b) => b.numberIngredients - a.numberIngredients);
+    }
+
+    // If no drinks matched criteria send null
+    if (data.drinks.length == 0){
+        data.drinks = null
+    };
+    resp.status(200).send(data)
+});
+
+
+// Sends all the ingredients from the JSON
+app.get("/ingredients", function(req, resp){
+    resp.status(200).send({ingredients: jsonContent.ingredients})
+});
 
 
 // Adds the data to the JSON
 app.post("/submit", uploadFilePromise, function(req, resp){
+    // Store request body as object and define undefined params as null
     let emptyFormData = {
         strName: null,
         strImagePath: null,
@@ -91,6 +183,7 @@ app.post("/submit", uploadFilePromise, function(req, resp){
         strIngredientAmount15: null
     };
     let newDrinkData = {...emptyFormData, ...req.body};
+    // Set the image source as either the file if it exists else a placeholder image
     if (req.file != undefined){
         newDrinkData.strImagePath = "./uploads/" + req.file.filename;
     } else {
@@ -135,27 +228,21 @@ app.post("/submit", uploadFilePromise, function(req, resp){
      * 2. Shift ingredients to earliest position
      */
     let numberIngredients = 0;
-    // Flags for if the ordering is valid
-    let foundNull = false;  // Changed to `true` after first `null` is found
-    let isValid = true;  // Changed to `false` after ingredient found after `null`
     let ingredientAmountPairs = new Array();
+    // Add ingredient-amount pairs to array
     for (let i = 1; i < 16; i++){
         let ingredient = newDrinkData["strIngredient"+i];
         if (ingredient){
             newDrinkData["strIngredient"+i] = ingredient.toLowerCase();
             ingredientAmountPairs.push([ingredient, newDrinkData["strIngredientAmount"+i]])
-            // Add to list if not in data.json
+            // Add to ingredients list if not in data.json
             if (!jsonContent.ingredients.includes(ingredient)){
                 jsonContent.ingredients.push(ingredient);
             }
             numberIngredients = numberIngredients + 1;
-            if (foundNull && isValid){
-                isValid = false;
-            }
-        } else if (!foundNull){
-            foundNull = true;
         }
     }
+    // Shift all ingredient-amount pairs to the earliest free index
     for (let i = 1; i < 16; i++){
         if (i <= ingredientAmountPairs.length){
             newDrinkData["strIngredient"+i] = ingredientAmountPairs[i-1][0];
@@ -174,77 +261,7 @@ app.post("/submit", uploadFilePromise, function(req, resp){
 });
 
 
-/**
- * Checks if a drink meets the search requirements
- * @param {object} drinkData The JSON data about the drink
- * @param {string} ingredient The ingredient which should be in the drink
- * @param {number} minAmount The minimum amount of ingredients allowed
- * @param {number} maxAmount The maximum amount of ingredients allowed
- * @returns {boolean} If the drink meets the search requirements
- */
-function filterSearch(drinkData, ingredient, minAmount, maxAmount){
-    if (drinkData.numberIngredients > maxAmount || drinkData.numberIngredients < minAmount){
-        return false;
-    }
-    if (ingredient == "all"){
-        return true;
-    }
-    for (let i = 1; i <= drinkData.numberIngredients; i++){
-        if (drinkData["strIngredient"+i] == ingredient){
-            return true;
-        }
-    }
-    return false;
-}
-
-
-// * GET methods
-app.get("/search", function(req, resp){
-    // Input validation
-    let searchIngredient = (req.query.ingredients || "all").toLowerCase();
-    let minAmountIngredients = Number(req.query.minIngredients) || 2;
-    let maxAmountIngredients = Number(req.query.maxIngredients) || 15;
-    let isOldestFirst = (req.query.order || "oldest") == "oldest";
-
-    /** Input Validation:
-     * 1. Check `minAmountIngredients` is not greater than `maxAmountIngredients`
-     * 2. Check `minAmountIngredients` is in range 2 - 15 inclusive
-     * 3. Check `maxAmountIngredients` is in range 2 - 15 inclusive
-     */
-    if (minAmountIngredients > maxAmountIngredients){
-        resp.status(400).send({error: `Query param minIngredients greater than maxIngredients (${minAmountIngredients} > ${maxAmountIngredients})`});
-        return
-    }
-    if (minAmountIngredients < 2){
-        resp.status(400).send({error: `Query param minIngredients out of range (${minAmountIngredients})`});
-        return
-    }
-    if (maxAmountIngredients > 15){
-        resp.status(400).send({error: `Query param maxIngredients out of range (${maxAmountIngredients})`});
-        return
-    }
-    // Stores the JSON data to be returned
-    let data = {drinks: []};
-    for (let drink of jsonContent.drinks){
-        if (filterSearch(drink, searchIngredient, minAmountIngredients, maxAmountIngredients)){
-            data.drinks.push(drink)
-        }
-    };
-    if (!isOldestFirst){
-        data.drinks.reverse();
-    }
-
-    // If no drinks matched criteria
-    if (data.drinks.length == 0){
-        data.drinks = null
-    };
-    resp.status(200).send(data)
-});
-
-app.get("/ingredients", function(req, resp){
-    resp.status(200).send({ingredients: jsonContent.ingredients})
-});
-
+// Deletes a drink from the JSON
 app.delete("/delete/:recipe", function(req, resp){
     let drinkName = req.params.recipe;
     if (drinkName == undefined){
@@ -262,6 +279,7 @@ app.delete("/delete/:recipe", function(req, resp){
         }
     }
     resp.status(400).send({error: `Recipe ${drinkName} not found`})
-})
+});
+
 
 module.exports = app;
